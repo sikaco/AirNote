@@ -1,6 +1,9 @@
 node_modules/
+npm-debug.log
+.DS_Store
+
+# WebStorm
 .idea/
+
+# dist files
 dist/bundle.js
-
-
-

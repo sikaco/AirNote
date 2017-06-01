@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {observer} from 'mobx-react'
+import css from './index.less'
 
 @observer
 export default class Sidebar extends Component {
