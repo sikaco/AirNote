@@ -1,5 +1,5 @@
-import {Component} from 'react'
-import {observer} from 'mobx-react'
+import { Component } from 'react'
+import { observer } from 'mobx-react'
 
 @observer
 export default class Notebooks extends Component {
