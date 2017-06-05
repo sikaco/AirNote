@@ -1,34 +1,60 @@
-import { Component } from 'react'
-import { observer } from 'mobx-react'
+import React from 'react'
 
-@observer
-export default class Collection extends Component {
-  render() {
-    return (
-      <div>
-        <CollectionHead/>
-        <CollectionList/>
+function CollectionHead({name}) {
+  return (
+    <div>
+      <div className="collection-icon">
+
       </div>
-    )
-  }
+      <div className="collection-title">
+        {name}
+      </div>
+      <div className="collection-number">
+
+      </div>
+    </div>
+  )
 }
 
-export class CollectionHead extends Component {
-  render() {
-    return (
-      <div>
-        <div className="collection-icon"></div>
-        <div className="collection-title"></div>
-        <div className="collection-number"></div>
-      </div>
-    )
-  }
+function CollectionItem() {
+  return (
+    <div> </div>
+  )
 }
 
-export class CollectionList extends Component {
-  render() {
-    return (
-      <div></div>
-    )
-  }
+function CollectionList() {
+  return (
+    <CollectionItem/>
+  )
+}
+
+export function Collection({name}) {
+  return (
+    <div>
+      <CollectionHead name={name}/>
+      <CollectionList/>
+    </div>
+  )
+}
+
+
+function NoteBook() {
+  return (
+    <div> </div>
+  )
+}
+
+function NoteBookList() {
+  return (
+    <NoteBook/>
+  )
+}
+
+export function NoteBooksCollection({name}) {
+  return (
+    <div>
+      <CollectionHead name={name}/>
+      <NoteBookList/>
+    </div>
+  )
 }

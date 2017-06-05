@@ -1,25 +1,34 @@
 import React, { Component } from 'react'
-import { observable, action, computed } from 'mobx'
+import { observable, action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Radio } from 'antd'
 import './index.less'
 
-// import Collection from 'Collection'
+import i18n from "../../global/i18n";
+import {Collection, NoteBooksCollection} from './Collection'
 
-const tabContentMap = {
-  0: <div>test1</div>,
-  1: <div>test2</div>
-}
+const tabs = [
+  {
+    name: i18n('notebooks'),
+    content: (
+      <div>
+        <Collection logo="" name={i18n('recents')} list=""/>
+        <Collection logo="" name={i18n('trash')} list=""/>
+        <NoteBooksCollection logo="" name={i18n('notebooks')} list=""/>
+      </div>
+    )
+  },
+  {
+    name: i18n('tags'),
+    content: <div>test2</div>
+  }
+]
 
 class LocalStore {
   @observable tabIndex = 0
 
   @action changeTab(index) {
     this.tabIndex = index
-  }
-
-  @computed get tabContent() {
-    return tabContentMap[this.tabIndex]
   }
 }
 
@@ -39,10 +48,11 @@ export default class Sidebar extends Component {
     return (
       <div id="sidebar">
         <Radio.Group value={this.store.tabIndex} onChange={this.handleTabChange}>
-          <Radio.Button value={0}>Notebooks</Radio.Button>
-          <Radio.Button value={1}>Tags</Radio.Button>
+          {
+            tabs.map((tab, i) => <Radio.Button value={i} key={i}>{tab.name}</Radio.Button>)
+          }
         </Radio.Group>
-        {this.store.tabContent}
+        {tabs[this.store.tabIndex].content}
       </div>
     )
   }
