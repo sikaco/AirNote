@@ -4,25 +4,10 @@ import { observer } from 'mobx-react'
 import { Radio } from 'antd'
 import './index.less'
 
-import i18n from "../../global/i18n";
-import appState from "../../AppState";
-import { Collection, CollectionWithBooks } from './Collection'
-
-function Notebooks({appState}) {
-  return (
-    <div>
-      <Collection
-        icon="" name={i18n('recents')} pages={appState.recents}
-        onClick={() => {appState.setShowedPages(appState.recents)}}
-      />
-      <Collection
-        icon="" name={i18n('trash')} pages={appState.notesInTrash}
-        onClick={() => {appState.setShowedPages(appState.notesInTrash)}}
-      />
-      <CollectionWithBooks icon="" name={i18n('notebooks')} books={appState.notebooks}/>
-    </div>
-  )
-}
+import i18n from "../../global/i18n"
+import appState from "../../AppState"
+import { Notebooks, Tags } from './Collection'
+import { SYNC_STATE } from '../../global/constants'
 
 const tabs = [
   {
@@ -31,9 +16,31 @@ const tabs = [
   },
   {
     name: i18n('tags'),
-    content: <div>test2</div>
+    content: <Tags tag2pagesMap={appState.tag2pagesMap}/>
   }
 ]
+
+function SyncInfoBar({syncInfo}) {
+  let syncTips = ""
+  switch (syncInfo.state) {
+    case SYNC_STATE.DONE:
+      let time = syncInfo.lastSyncedTime
+      syncTips = `Last Synced: ${time}`
+      break
+    case SYNC_STATE.DOING:
+      syncTips = 'Syncing...'
+      break
+    case SYNC_STATE.FAILED:
+      syncTips = 'Sync Filed'
+  }
+
+  return (
+    <div onClick={() => {appState.getData()}}>
+      <img/>
+      <div>{syncTips}</div>
+    </div>
+  )
+}
 
 class ComponentStore {
   @observable tabIndex = 0
@@ -64,6 +71,7 @@ export default class Sidebar extends Component {
           }
         </Radio.Group>
         {tabs[this.store.tabIndex].content}
+        <SyncInfoBar syncInfo={appState.syncInfo}/>
       </div>
     )
   }

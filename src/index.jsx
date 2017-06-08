@@ -3,18 +3,17 @@ import { render } from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
 import App from './components/App'
-import appState from './AppState'
 
-function renderApp(App, appState) {
+function renderApp(App) {
   render(
     <AppContainer>
-      <App appState={appState}/>
+      <App/>
     </AppContainer>,
     document.getElementById('root')
   )
 }
 
-renderApp(App, appState)
+renderApp(App)
 
 if (module.hot) {
   module.hot.accept()

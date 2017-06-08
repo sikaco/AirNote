@@ -1,18 +1,35 @@
-import { observable, action, computed } from 'mobx'
-import {CHAPTER_TYPE, COLORS} from './global/constants'
+import { observable, action, computed, useStrict } from 'mobx'
+import {CHAPTER_TYPE, COLOR, SYNC_STATE} from './global/constants'
+useStrict(true)
 
 class AppState {
-  @observable allNotes = []
+  @observable allNotePages = []
 
   @observable notebooks = []
   @observable recents = []
   @computed get notesInTrash() {
-    return this.allNotes.filter(page => page.deleted)
+    return this.allNotePages.filter(page => page.deleted)
+  }
+  @computed get tag2pagesMap() {
+    let pagesOfTags = {}
+    this.allNotePages.forEach((page, i) => {
+      page.tags.forEach(tag => {
+        pagesOfTags[tag] = pagesOfTags[tag] || []
+        pagesOfTags[tag].push(i)
+      })
+    })
+
+    return pagesOfTags
   }
 
   @observable showedPages = []
   @action setShowedPages(pages) {
     this.showedPages = pages
+  }
+
+  @observable syncInfo = {
+    state: SYNC_STATE.DONE,
+    lastSyncedTime: new Date
   }
 
   constructor() {
@@ -22,48 +39,52 @@ class AppState {
   @action getData() {
     //TODO: ajax
 
-    this.allNotes = [
+    this.allNotePages = [
       {
         layer: 0,
         title: 'Hello Notes',
         contentType: 'html',
         content: "Your first note",
-        deleted: false
+        deleted: false,
+        tags: ['note', 'blog'],
+        id: 0   // TODO: every page should has a uniq id
       },
       {
         layer: 1,
         title: 'Hello Notes 2nd',
         contentType: 'html',
         content: "Your 2nd note",
-        deleted: false
+        deleted: false,
+        tags: ['note']
       },
       {
         layer: 1,
         title: 'Hello Notes 2nd',
         contentType: 'html',
         content: "Your 2nd note",
-        deleted: false
+        deleted: false,
+        tags: []
       }
     ]
 
     this.notebooks = [
       {
-        color: COLORS.RED,
+        color: COLOR.RED,
         name: 'User guide',
         chapters: [
           {
-            color: COLORS.BLUE,
+            color: COLOR.BLUE,
             name: 'Air Note',
             type: CHAPTER_TYPE.CHAPTER,
             pages: [0, 1]
           },
           {
-            color: COLORS.BLUE,
+            color: COLOR.BLUE,
             name: 'Air Note Group',
             type: CHAPTER_TYPE.GROUP,
             chapters: [
               {
-                color: COLORS.BLUE,
+                color: COLOR.BLUE,
                 name: 'Air Note',
                 type: CHAPTER_TYPE.CHAPTER,
                 pages: [2]

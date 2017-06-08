@@ -1,4 +1,5 @@
 import React from 'react'
+import i18n from "../../global/i18n"
 import {CHAPTER_TYPE} from '../../global/constants'
 import appState from '../../AppState'
 
@@ -61,9 +62,9 @@ function Chapters({chapters}) {
         chapters.map((chapter, i) => {
           switch (chapter.type) {
             case CHAPTER_TYPE.CHAPTER:
-              return <Chapter key={i} chapter={chapter}/>
+              return <Chapter chapter={chapter} key={i}/>
             case CHAPTER_TYPE.GROUP:
-              return <ChapterGroup key={i} group={chapter}/>
+              return <ChapterGroup group={chapter} key={i}/>
             default:
               return null
           }
@@ -86,22 +87,56 @@ function Books({books}) {
   return (
     <div>
       {
-        books.map((book, i) => <Book key={i} book={book}/>)
+        books.map((book, i) => <Book book={book} key={i}/>)
       }
     </div>
   )
 }
 
-export function Collection({icon, name, pages, onClick}) {
+function Collection({icon, name, pages, onClick}) {
   return <CollectionHead icon={icon} name={name} pageNum={pages.length} onClick={onClick}/>
 }
 
-export function CollectionWithBooks({icon, name, books}) {
+function CollectionWithBooks({icon, name, books}) {
   return (
     <div>
       <CollectionHead icon={icon} name={name}/>
       <AddNotebooks/>
       <Books books={books}/>
+    </div>
+  )
+}
+
+export function Notebooks({appState}) {
+  return (
+    <div>
+      <Collection
+        icon="" name={i18n('recents')} pages={appState.recents}
+        onClick={() => {appState.setShowedPages(appState.recents)}}
+      />
+      <Collection
+        icon="" name={i18n('trash')} pages={appState.notesInTrash}
+        onClick={() => {appState.setShowedPages(appState.notesInTrash)}}
+      />
+      <CollectionWithBooks icon="" name={i18n('notebooks')} books={appState.notebooks}/>
+    </div>
+  )
+}
+
+function Tag({tag, pages}) {
+  return (
+    <div onClick={() => appState.setShowedPages(pages)}>{tag}</div>
+  )
+}
+
+export function Tags({tag2pagesMap}) {
+  return (
+    <div>
+      {
+        Object.keys(tag2pagesMap).map(tag => {
+          return <Tag tag={tag} pages={tag2pagesMap[tag]} key={tag}/>
+        })
+      }
     </div>
   )
 }
