@@ -1,60 +1,107 @@
 import React from 'react'
+import {CHAPTER_TYPE} from '../../global/constants'
+import appState from '../../AppState'
 
-function CollectionHead({name}) {
+function CollectionHead({icon, name, pageNum = -1, onClick}) {
   return (
-    <div>
+    <div onClick={onClick}>
       <div className="collection-icon">
-
+        <img src={icon}/>
       </div>
-      <div className="collection-title">
-        {name}
-      </div>
-      <div className="collection-number">
-
-      </div>
+      <div className="collection-title">{name}</div>
+      {
+        pageNum >= 0 ? <div className="collection-number">{pageNum}</div> : null
+      }
     </div>
   )
 }
 
-function CollectionItem() {
-  return (
-    <div> </div>
-  )
-}
-
-function CollectionList() {
-  return (
-    <CollectionItem/>
-  )
-}
-
-export function Collection({name}) {
+function AddNotebooks() {
   return (
     <div>
-      <CollectionHead name={name}/>
-      <CollectionList/>
+
     </div>
   )
 }
 
-
-function NoteBook() {
-  return (
-    <div> </div>
-  )
-}
-
-function NoteBookList() {
-  return (
-    <NoteBook/>
-  )
-}
-
-export function NoteBooksCollection({name}) {
+function BookHead({color, name}) {
   return (
     <div>
-      <CollectionHead name={name}/>
-      <NoteBookList/>
+      <span className="book-icon" style={{color: color}}>i</span>
+      <div className="book-title">{name}</div>
+    </div>
+  )
+}
+
+function Chapter({chapter}) {
+  return (
+    <div onClick={() => {appState.setShowedPages(chapter.pages)}}>
+      <span className="chapter-icon" style={{color: chapter.color}}>i</span>
+      <div className="chapter-title">{chapter.name}</div>
+    </div>
+  )
+}
+
+function ChapterGroup({group}) {
+  return (
+    <div>
+      <div>
+        <span className="chapter-group-icon" style={{color: group.color}}>i</span>
+        <div className="chapter-group-title">{group.name}</div>
+      </div>
+      <Chapters chapters={group.chapters}/>
+    </div>
+  )
+}
+
+function Chapters({chapters}) {
+  return (
+    <div>
+      {
+        chapters.map((chapter, i) => {
+          switch (chapter.type) {
+            case CHAPTER_TYPE.CHAPTER:
+              return <Chapter key={i} chapter={chapter}/>
+            case CHAPTER_TYPE.GROUP:
+              return <ChapterGroup key={i} group={chapter}/>
+            default:
+              return null
+          }
+        })
+      }
+    </div>
+  )
+}
+
+function Book({book}) {
+  return (
+    <div>
+      <BookHead color={book.color} name={book.name}/>
+      <Chapters chapters={book.chapters}/>
+    </div>
+  )
+}
+
+function Books({books}) {
+  return (
+    <div>
+      {
+        books.map((book, i) => <Book key={i} book={book}/>)
+      }
+    </div>
+  )
+}
+
+export function Collection({icon, name, pages, onClick}) {
+  return <CollectionHead icon={icon} name={name} pageNum={pages.length} onClick={onClick}/>
+}
+
+export function CollectionWithBooks({icon, name, books}) {
+  return (
+    <div>
+      <CollectionHead icon={icon} name={name}/>
+      <AddNotebooks/>
+      <Books books={books}/>
     </div>
   )
 }

@@ -5,18 +5,29 @@ import { Radio } from 'antd'
 import './index.less'
 
 import i18n from "../../global/i18n";
-import {Collection, NoteBooksCollection} from './Collection'
+import appState from "../../AppState";
+import { Collection, CollectionWithBooks } from './Collection'
+
+function Notebooks({appState}) {
+  return (
+    <div>
+      <Collection
+        icon="" name={i18n('recents')} pages={appState.recents}
+        onClick={() => {appState.setShowedPages(appState.recents)}}
+      />
+      <Collection
+        icon="" name={i18n('trash')} pages={appState.notesInTrash}
+        onClick={() => {appState.setShowedPages(appState.notesInTrash)}}
+      />
+      <CollectionWithBooks icon="" name={i18n('notebooks')} books={appState.notebooks}/>
+    </div>
+  )
+}
 
 const tabs = [
   {
     name: i18n('notebooks'),
-    content: (
-      <div>
-        <Collection logo="" name={i18n('recents')} list=""/>
-        <Collection logo="" name={i18n('trash')} list=""/>
-        <NoteBooksCollection logo="" name={i18n('notebooks')} list=""/>
-      </div>
-    )
+    content: <Notebooks appState={appState}/>
   },
   {
     name: i18n('tags'),
@@ -24,7 +35,7 @@ const tabs = [
   }
 ]
 
-class LocalStore {
+class ComponentStore {
   @observable tabIndex = 0
 
   @action changeTab(index) {
@@ -37,7 +48,7 @@ export default class Sidebar extends Component {
   constructor(props) {
     super(props)
 
-    this.store = new LocalStore()
+    this.store = new ComponentStore()
   }
 
   handleTabChange = (e) => {
