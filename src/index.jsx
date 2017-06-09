@@ -4,7 +4,12 @@ import { AppContainer } from 'react-hot-loader'
 
 import App from './components/App'
 
-function renderApp(App) {
+
+/**
+ * ATTENTION: These functions which mounted on window ONLY can be write on THIS FILE
+ */
+
+window.renderApp = function renderApp() {
   render(
     <AppContainer>
       <App/>
@@ -13,7 +18,7 @@ function renderApp(App) {
   )
 }
 
-renderApp(App)
+renderApp()
 
 if (module.hot) {
   module.hot.accept()

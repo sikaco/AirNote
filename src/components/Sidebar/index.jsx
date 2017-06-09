@@ -4,18 +4,18 @@ import { observer } from 'mobx-react'
 import { Radio } from 'antd'
 import './index.less'
 
-import i18n from "../../global/i18n"
+import { i18n } from "../../global/i18nStore"
 import appState from "../../AppState"
 import { Notebooks, Tags } from './Collection'
 import { SYNC_STATE } from '../../global/constants'
 
 const tabs = [
   {
-    name: i18n('notebooks'),
+    name: 'notebooks',
     content: <Notebooks appState={appState}/>
   },
   {
-    name: i18n('tags'),
+    name: 'tags',
     content: <Tags tag2pagesMap={appState.tag2pagesMap}/>
   }
 ]
@@ -67,7 +67,7 @@ export default class Sidebar extends Component {
       <div id="sidebar">
         <Radio.Group value={this.store.tabIndex} onChange={this.handleTabChange}>
           {
-            tabs.map((tab, i) => <Radio.Button value={i} key={i}>{tab.name}</Radio.Button>)
+            tabs.map((tab, i) => <Radio.Button value={i} key={i}>{i18n(tab.name)}</Radio.Button>)
           }
         </Radio.Group>
         {tabs[this.store.tabIndex].content}

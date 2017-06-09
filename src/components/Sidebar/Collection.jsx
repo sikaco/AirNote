@@ -1,6 +1,6 @@
 import React from 'react'
-import i18n from "../../global/i18n"
-import {CHAPTER_TYPE} from '../../global/constants'
+import { i18n } from "../../global/i18nStore"
+import { CHAPTER_TYPE } from '../../global/constants'
 import appState from '../../AppState'
 
 function CollectionHead({icon, name, pageNum = -1, onClick}) {
@@ -36,7 +36,9 @@ function BookHead({color, name}) {
 
 function Chapter({chapter}) {
   return (
-    <div onClick={() => {appState.setShowedPages(chapter.pages)}}>
+    <div onClick={() => {
+      appState.setShowedPages(chapter.pages)
+    }}>
       <span className="chapter-icon" style={{color: chapter.color}}>i</span>
       <div className="chapter-title">{chapter.name}</div>
     </div>
@@ -112,11 +114,15 @@ export function Notebooks({appState}) {
     <div>
       <Collection
         icon="" name={i18n('recents')} pages={appState.recents}
-        onClick={() => {appState.setShowedPages(appState.recents)}}
+        onClick={() => {
+          appState.setShowedPages(appState.recents)
+        }}
       />
       <Collection
         icon="" name={i18n('trash')} pages={appState.notesInTrash}
-        onClick={() => {appState.setShowedPages(appState.notesInTrash)}}
+        onClick={() => {
+          appState.setShowedPages(appState.notesInTrash)
+        }}
       />
       <CollectionWithBooks icon="" name={i18n('notebooks')} books={appState.notebooks}/>
     </div>
