@@ -1,3 +1,8 @@
+const NOTE_TYPE = {
+  HTML: 0,
+  MARK_DOWN: 1,
+}
+
 const CHAPTER_TYPE = {
   CHAPTER: 0,
   GROUP: 1,
@@ -16,6 +21,7 @@ const SYNC_STATE = {
 }
 
 export {
+  NOTE_TYPE,
   CHAPTER_TYPE,
   COLOR,
   SYNC_STATE

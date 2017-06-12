@@ -12,7 +12,7 @@ import App from './components/App'
 window.renderApp = function renderApp() {
   render(
     <AppContainer>
-      <App/>
+      <App />
     </AppContainer>,
     document.getElementById('root')
   )

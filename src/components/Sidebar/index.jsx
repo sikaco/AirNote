@@ -4,39 +4,39 @@ import { observer } from 'mobx-react'
 import { Radio } from 'antd'
 import './index.less'
 
-import { i18n } from "../../global/i18nStore"
-import appState from "../../AppState"
+import { i18n } from '../../global/i18nStore'
+import appState from '../../AppState'
 import { Notebooks, Tags } from './Collection'
 import { SYNC_STATE } from '../../global/constants'
 
 const tabs = [
   {
     name: 'notebooks',
-    content: <Notebooks appState={appState}/>
+    content: <Notebooks appState={appState} />
   },
   {
     name: 'tags',
-    content: <Tags tag2pagesMap={appState.tag2pagesMap}/>
+    content: <Tags tag2pagesMap={appState.tag2pagesMap} />
   }
 ]
 
 function SyncInfoBar({syncInfo}) {
-  let syncTips = ""
+  let syncTips = ''
   switch (syncInfo.state) {
     case SYNC_STATE.DONE:
       let time = syncInfo.lastSyncedTime
-      syncTips = `Last Synced: ${time}`
+      syncTips = `${i18n('lastSynced')}: ${time}`
       break
     case SYNC_STATE.DOING:
-      syncTips = 'Syncing...'
+      syncTips = `${i18n('syncing')}`
       break
     case SYNC_STATE.FAILED:
-      syncTips = 'Sync Filed'
+      syncTips = `${i18n('syncFailed')}`
   }
 
   return (
     <div onClick={() => {appState.getData()}}>
-      <img/>
+      <img />
       <div>{syncTips}</div>
     </div>
   )
@@ -71,7 +71,7 @@ export default class Sidebar extends Component {
           }
         </Radio.Group>
         {tabs[this.store.tabIndex].content}
-        <SyncInfoBar syncInfo={appState.syncInfo}/>
+        <SyncInfoBar syncInfo={appState.syncInfo} />
       </div>
     )
   }

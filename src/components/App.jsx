@@ -12,15 +12,17 @@ import './app.less'
 export default class App extends Component {
   render() {
     return (
-      <div id="app">
-        <Sidebar />
-        <Pages />
-        <Note />
+      <div>
+        <div id="app">
+          <Sidebar />
+          <Pages />
+          <Note />
+        </div>
 
         <div className="for-debug">
           <button onClick={() => {i18nStore.toggleLanguage()}}>Switch language</button>
         </div>
-        <DevTools/>
+        <DevTools />
       </div>
     )
   }

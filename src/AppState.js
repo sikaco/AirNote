@@ -1,15 +1,19 @@
 import { observable, action, computed, useStrict } from 'mobx'
-import {CHAPTER_TYPE, COLOR, SYNC_STATE} from './global/constants'
+import { NOTE_TYPE, CHAPTER_TYPE, COLOR, SYNC_STATE } from './global/constants'
 useStrict(true)
 
 class AppState {
+  // all note pages
   @observable allNotePages = []
 
+  // collections
   @observable notebooks = []
   @observable recents = []
+
   @computed get notesInTrash() {
     return this.allNotePages.filter(page => page.deleted)
   }
+
   @computed get tag2pagesMap() {
     let pagesOfTags = {}
     this.allNotePages.forEach((page, i) => {
@@ -22,11 +26,24 @@ class AppState {
     return pagesOfTags
   }
 
+  // showed pages
   @observable showedPages = []
+
   @action setShowedPages(pages) {
     this.showedPages = pages
   }
 
+  @action pushToShowedPages(...newPage) {
+    console.log(...newPage)
+    this.showedPages.push(...newPage)
+    console.log(this.showedPages.slice())
+  }
+
+  @action spliceShowedPages() {
+
+  }
+
+  // sync info
   @observable syncInfo = {
     state: SYNC_STATE.DONE,
     lastSyncedTime: new Date
@@ -43,8 +60,8 @@ class AppState {
       {
         layer: 0,
         title: 'Hello Notes',
-        contentType: 'html',
-        content: "Your first note",
+        contentType: NOTE_TYPE.HTML,
+        content: 'Your first note',
         deleted: false,
         tags: ['note', 'blog'],
         id: 0   // TODO: every page should has a uniq id
@@ -52,16 +69,16 @@ class AppState {
       {
         layer: 1,
         title: 'Hello Notes 2nd',
-        contentType: 'html',
-        content: "Your 2nd note",
+        contentType: NOTE_TYPE.HTML,
+        content: 'Your 2nd note',
         deleted: false,
         tags: ['note']
       },
       {
         layer: 1,
         title: 'Hello Notes 2nd',
-        contentType: 'html',
-        content: "Your 2nd note",
+        contentType: NOTE_TYPE.HTML,
+        content: 'Your 2nd note',
         deleted: false,
         tags: []
       }
