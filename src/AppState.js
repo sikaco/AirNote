@@ -6,8 +6,14 @@ class AppState {
   // all note pages
   @observable allNotePages = []
 
-  // collections
+  // notebooks
   @observable notebooks = []
+
+  @action pushChapterToBook(chapter, bookIndex) { // todo: for debug
+    this.notebooks[bookIndex].chapters.push(chapter)
+  }
+
+  // collections
   @observable recents = []
 
   @computed get notesInTrash() {
@@ -26,16 +32,26 @@ class AppState {
     return pagesOfTags
   }
 
-  // showed pages
+  // pages
   @observable showedPages = []
 
-  @action setShowedPages(pages) {
+  @action showPages(pages) {
     this.showedPages = pages
   }
 
-  @action pushToShowedPages(...newPage) {
-    console.log(...newPage)
-    this.showedPages.push(...newPage)
+  @action addNewPage(noteType) {
+    const blankPage = {
+      layer: 0,
+      title: 'Untitled Note', // todo: need be ''
+      contentType: noteType,
+      content: '',
+      deleted: false,
+      tags: [],
+      id: 0
+    }
+
+    this.allNotePages.push(blankPage)
+    this.showedPages.push(this.allNotePages.length - 1)
     console.log(this.showedPages.slice())
   }
 

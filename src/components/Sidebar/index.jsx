@@ -20,7 +20,7 @@ const tabs = [
   }
 ]
 
-function SyncInfoBar({syncInfo}) {
+const SyncInfoBar = observer(({syncInfo}) => {
   let syncTips = ''
   switch (syncInfo.state) {
     case SYNC_STATE.DONE:
@@ -40,7 +40,7 @@ function SyncInfoBar({syncInfo}) {
       <div>{syncTips}</div>
     </div>
   )
-}
+})
 
 class ComponentStore {
   @observable tabIndex = 0

@@ -9,7 +9,7 @@ import App from './components/App'
  * ATTENTION: These functions which mounted on window ONLY can be write on THIS FILE
  */
 
-window.renderApp = function renderApp() {
+function renderApp() {
   render(
     <AppContainer>
       <App />

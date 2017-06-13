@@ -43,13 +43,11 @@ class I18nStore {
   @action switchLanguage(lang) {
     if (supportLang.indexOf(lang) > -1) {
       this.language = lang
-      window.renderApp()
     }
   }
 
   @action toggleLanguage() {
     this.language = this.language === 'en' ? 'zh' : 'en'
-    window.renderApp()
   }
 
   constructor() {
