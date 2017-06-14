@@ -1,13 +1,13 @@
-import React, { Component } from 'react'
+import * as React from 'react'
 import { observable, action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Radio } from 'antd'
 import './index.less'
 
-import { i18n } from '../../global/i18nStore'
-import appState from '../../AppState'
+import { i18n } from '../../stores/I18nStore'
+import appState, { ISyncInfo } from '../../stores/AppState'
 import { Notebooks, Tags } from './Collection'
-import { SYNC_STATE } from '../../global/constants'
+import { SyncState } from '../../stores/constants'
 
 const tabs = [
   {
@@ -16,21 +16,22 @@ const tabs = [
   },
   {
     name: 'tags',
-    content: <Tags tag2pagesMap={appState.tag2pagesMap} />
+    content: <Tags notesOfTags={appState.notesOfTags} />
   }
 ]
 
-const SyncInfoBar = observer(({syncInfo}) => {
+const SyncInfoBar = observer((props: { syncInfo: ISyncInfo }) => {
+  const {syncInfo} = props
   let syncTips = ''
   switch (syncInfo.state) {
-    case SYNC_STATE.DONE:
+    case SyncState.DONE:
       let time = syncInfo.lastSyncedTime
       syncTips = `${i18n('lastSynced')}: ${time}`
       break
-    case SYNC_STATE.DOING:
+    case SyncState.DOING:
       syncTips = `${i18n('syncing')}`
       break
-    case SYNC_STATE.FAILED:
+    case SyncState.FAILED:
       syncTips = `${i18n('syncFailed')}`
   }
 
@@ -45,20 +46,22 @@ const SyncInfoBar = observer(({syncInfo}) => {
 class ComponentStore {
   @observable tabIndex = 0
 
-  @action changeTab(index) {
+  @action changeTab(index: number): void {
     this.tabIndex = index
   }
 }
 
 @observer
-export default class Sidebar extends Component {
-  constructor(props) {
+export default class Sidebar extends React.Component<any, void> {
+  store: ComponentStore
+
+  constructor(props: any) {
     super(props)
 
     this.store = new ComponentStore()
   }
 
-  handleTabChange = (e) => {
+  handleTabChange = (e: any) => {
     this.store.changeTab(e.target.value)
   }
 

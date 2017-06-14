@@ -1,6 +1,12 @@
 import { observable, action } from 'mobx'
 
-const i18nConfig = {
+interface Ii18nConfig {
+  [word: string]: {
+    [lang: string]: string
+  }
+}
+
+const i18nConfig: Ii18nConfig = {
   notebooks: {
     zh: '笔记本',
     en: 'Notebooks'
@@ -40,13 +46,13 @@ const supportLang = ['en', 'zh']
 class I18nStore {
   @observable language = ''
 
-  @action switchLanguage(lang) {
+  @action switchLanguage(lang: string): void {
     if (supportLang.indexOf(lang) > -1) {
       this.language = lang
     }
   }
 
-  @action toggleLanguage() {
+  @action toggleLanguage(): void {
     this.language = this.language === 'en' ? 'zh' : 'en'
   }
 
@@ -54,7 +60,7 @@ class I18nStore {
     this.language = supportLang[0]  // todo: Initial language according to user's system
   }
 
-  i18n = key => i18nConfig[key][this.language]
+  i18n = (word: string): string => i18nConfig[word][this.language]
 }
 
 const i18nStore = new I18nStore()
