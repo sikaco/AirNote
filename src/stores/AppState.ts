@@ -28,6 +28,7 @@ export interface INoteData {
   contentType: NoteType
   content: string
   deleted: boolean
+  deletedTime?: Date
   tags: string[]
   id: number
 }
@@ -52,14 +53,23 @@ class AppState {
   @observable recents: number[] = []
 
   @computed get notesInTrash(): number[] {
-    const deletedNotes: number[] = []
-    this.allNoteData.forEach((note, i) => {
-      if (note.deleted) {
-        deletedNotes.push(i)
+    const dataWithIndex: {
+      deletedTime: Date
+      index: number
+    }[] = []
+
+    this.allNoteData.forEach((noteData, i) => {
+      if (noteData.deleted) {
+        dataWithIndex.push({
+          deletedTime: noteData.deletedTime,
+          index: i
+        })
       }
     })
 
-    return deletedNotes
+    return dataWithIndex
+      .sort((p, n) => Number(p.deletedTime) - Number(n.deletedTime))
+      .map(note => note.index)
   }
 
   @computed get notesOfTags(): INotesOfTags {
@@ -148,7 +158,17 @@ class AppState {
         deleted: false,
         tags: [],
         id: 2
-      }
+      },
+      {
+        layer: 1,
+        title: 'Hello Notes in trash',
+        contentType: NoteType.HTML,
+        content: 'Your 2nd note',
+        deleted: true,
+        deletedTime: new Date(),
+        tags: [],
+        id: 3
+      },
     ]
 
     this.notebooks = [
