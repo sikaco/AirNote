@@ -1,6 +1,7 @@
 enum NoteType {HTML, MARK_DOWN}
 enum ChapterType {CHAPTER, GROUP}
 enum SyncState {DONE, DOING, FAILED}
+enum NoteActionType {ADD, UPDATE, DELETE}
 
 const Color = {
   BLUE: 'blue',
@@ -11,6 +12,7 @@ const Color = {
 export {
   NoteType,
   ChapterType,
+  SyncState,
+  NoteActionType,
   Color,
-  SyncState
 }

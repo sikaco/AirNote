@@ -1,5 +1,6 @@
 import { observable, action, computed, useStrict } from 'mobx'
-import { NoteType, ChapterType, Color, SyncState } from './constants'
+import { merge } from 'lodash'
+import { NoteType, ChapterType, Color, SyncState, NoteActionType } from './constants'
 useStrict(true)
 
 export interface IBook {
@@ -40,6 +41,10 @@ export interface INotesOfTags {
 export interface ISyncInfo {
   state: SyncState
   lastSyncedTime: Date
+}
+
+export interface INotePath {
+  [index: number]: { path: number | string }
 }
 
 class AppState {
@@ -95,10 +100,11 @@ class AppState {
     this.showedNotes = notes
   }
 
+  // modify note
   @action addNewNote(noteType: NoteType): void {
     const blankNote: INoteData = {
       layer: 0,
-      title: 'Untitled Note', // todo: need be ''
+      title: 'Untitled Note', // todo: For debug now. After debugged, it will be ''.
       contentType: noteType,
       content: '',
       deleted: false,
@@ -106,16 +112,59 @@ class AppState {
       id: 0
     }
 
-    this.allNoteData.push(blankNote)
-
-    // todo: modified notebooks structure
-
-    console.log(this.showedNoteData.slice())
+    this.modifyNoteInCurrentChapter(NoteActionType.ADD, null, blankNote)
   }
 
-  @action
-  private noteCURD() {
+  @action moveNoteInCurrentChapter(fromI: number, destI: number) {
+    if (fromI === destI) { return }
+    if (fromI < destI) {
+      this.showedNotes.splice(destI, 0, this.showedNotes[fromI])
+      this.showedNotes.splice(fromI, 1)
+    } else {
+      const noteArr = this.showedNotes.splice(fromI, 1)
+      this.showedNotes.splice(destI, 0, noteArr[0])
+    }
+  }
 
+  @action modifyNoteInCurrentChapter(action: NoteActionType, noteI?: number, newNote?: INoteData) {
+    let targetNote: INoteData = null
+
+    switch (action) {
+      case NoteActionType.ADD:
+        this.allNoteData.push(newNote)
+        this.showedNotes.push(this.allNoteData.length - 1)
+        break
+      case NoteActionType.DELETE:
+        targetNote = this.allNoteData[this.showedNotes[noteI]]
+        targetNote.deleted = true
+        targetNote.deletedTime = new Date()
+
+        this.showedNotes.splice(noteI, 1)
+        break
+      case NoteActionType.UPDATE:
+        targetNote = this.allNoteData[this.showedNotes[noteI]]
+        merge(targetNote, newNote)
+        break
+      default:
+        console.log('Unknown NoteActionType')
+    }
+  }
+
+  @action moveNote(fromPath: INotePath, destPath: INotePath) {
+
+  }
+
+  @action modifyNote(action: NoteActionType, notePath: INotePath, newNote?: INoteData) {
+    switch (action) {
+      case NoteActionType.ADD:
+        break
+      case NoteActionType.DELETE:
+        break
+      case NoteActionType.UPDATE:
+        break
+      default:
+        console.log('Unknown NoteActionType')
+    }
   }
 
   // sync info
