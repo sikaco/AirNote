@@ -68,7 +68,7 @@ export default class Sidebar extends React.Component<any, void> {
   render() {
     return (
       <div id="sidebar">
-        <Radio.Group value={this.store.tabIndex} onChange={this.handleTabChange}>
+        <Radio.Group className="sidebar-tabs" value={this.store.tabIndex} onChange={this.handleTabChange}>
           {
             tabs.map((tab, i) => <Radio.Button value={i} key={i}>{i18n(tab.name)}</Radio.Button>)
           }

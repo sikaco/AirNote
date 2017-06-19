@@ -2,10 +2,12 @@ const {resolve} = require('path')
 const webpack = require('webpack')
 const Merge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const commonCfg = {
   entry: {
     vendor: [
+      'lodash',
       'mobx',
       'mobx-react',
       'mobx-react-devtools',
@@ -21,19 +23,6 @@ const commonCfg = {
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx']
-  },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: ['babel-loader', 'ts-loader'],
-        exclude: /node_modules/
-      },
-      {
-        test: /\.(less|css)$/,
-        use: ['style-loader', 'css-loader', 'less-loader'],
-      }
-    ],
   }
 }
 
@@ -49,12 +38,39 @@ const devCfg = {
   },
   output: {
     filename: '[name].js',	// 输出的打包文件
+    devtoolModuleFilenameTemplate: 'file://[absolute-resource-path]',
+    devtoolFallbackModuleFilenameTemplate: 'file://[absolute-resource-path]?[hash]',
   },
   devtool: 'inline-source-map',
   devServer: {
     hot: true,	// 开启服务器的模块热替换(HMR)
     contentBase: resolve(__dirname, 'dist'),	// 输出文件的路径
     publicPath: '/'	// 和上文 output 的“publicPath”值保持一致
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: ['babel-loader', 'ts-loader'],
+        exclude: /node_modules/
+      },
+      {
+        test: /\.(less|css)$/,
+        use: [{
+          loader: 'style-loader'
+        }, {
+          loader: 'css-loader',
+          options: {
+            sourceMap: true
+          }
+        }, {
+          loader: 'less-loader',
+          options: {
+            sourceMap: true
+          }
+        }],
+      }
+    ],
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
@@ -82,6 +98,21 @@ const prodCfg = {
     filename: '[name].[chunkHash:6].js',	// 输出的打包文件
   },
   devtool: 'source-map',
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: ['babel-loader', 'ts-loader'],
+        exclude: /node_modules/
+      },
+      {
+        test: /\.(less|css)$/,
+        use: ExtractTextPlugin.extract({
+          use: ['css-loader', 'less-loader']
+        })
+      }
+    ]
+  },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
       name: [
@@ -92,8 +123,9 @@ const prodCfg = {
     new HtmlWebpackPlugin({
       title: 'demo',
       template: resolve(__dirname, 'dist') + '/index.html' // 模板路径
-    })
-  ]
+    }),
+    new ExtractTextPlugin('[name].css')
+  ],
 }
 
 module.exports = function (env) {

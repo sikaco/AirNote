@@ -12,7 +12,7 @@ import './app.less'
 export default class App extends React.Component<any, void> {
   render() {
     return (
-      <div>
+      <div id="app-wrap">
         <div id="app">
           <Sidebar />
           <Pages />

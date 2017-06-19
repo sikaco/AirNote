@@ -1,4 +1,10 @@
-html, body, #root, #app {
+@import "variables";
+
+html {
+  font-size: 20px;
+}
+
+html, body, #app-wrap, #root, #app {
   height: 100%;
 }
 
@@ -6,16 +12,10 @@ html, body, #root, #app {
   display: flex;
 }
 
-#sidebar {
-  flex: initial;
-  width: 200px;
-  min-width: 100px;
-}
-
 #pages {
   flex: initial;
-  width: 300px;
-  min-width: 200px;
+  width: 15rem;
+  min-width: 10rem;
 }
 
 #notes {
