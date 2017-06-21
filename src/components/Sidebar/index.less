@@ -1,13 +1,19 @@
+@import "../variables";
+
 #sidebar {
   flex: initial;
   width: 9.5rem;
   min-width: 5rem;
+  height: 100%;
   border-right: solid 1px #CCCCCC;
+  display: flex;
+  flex-direction: column;
 
   .sidebar-tabs {
     margin: .35rem auto;
     width: 7.4rem;
     display: block;
+    text-align: center;
   }
 
   .ant-radio-button-wrapper {
@@ -15,5 +21,128 @@
     height: 1.25rem;
     line-height: 1.2rem;
     width: 50%;
+  }
+}
+
+#notebooks {
+  padding-top: .2rem;
+  flex: 1;
+
+  /*
+    collection
+   */
+  .collection-head {
+    padding: 0.48rem 1.03rem;
+    overflow: hidden;
+  }
+  .collection-icon {
+    background: blue;
+    float: left;
+    width: 1rem;
+    height: 1rem;
+  }
+  .collection-title {
+    float: left;
+    margin-left: .64rem;
+    font-size: .7rem;
+  }
+  .collection-number {
+    float: right;
+    font-size: .68rem;
+    line-height: 1.1rem;
+  }
+
+  .add-notebooks-btn {
+    float: right;
+  }
+
+  /*
+    book
+   */
+  .books {
+
+  }
+  .book {
+    padding: 0.48rem 1.24rem .4rem;
+  }
+  .book-head {
+    height: 1.1rem;
+    background: gray;
+  }
+  .book-arrow {
+    background: blue;
+    width: .69rem;
+    height: .69rem;
+    float: left;
+
+    .vertical-middle;
+  }
+  .book-icon {
+    background: blue;
+    width: 0.8rem;
+    height: 1rem;
+    margin-left: 0.76rem;
+    float: left;
+  }
+  .book-title {
+    float: left;
+    margin-left: .92rem;
+    font-size: .65rem;
+    line-height: 1.1rem;
+  }
+
+  /*
+    chapter
+   */
+  .chapters {
+    padding-left: 2.4rem;
+    padding-top: .45rem;
+  }
+  .chapter {
+    background: gray;
+    overflow: hidden;
+    padding: .25rem 0;
+  }
+  .chapter-group {
+
+  }
+  .chapter-arrow {
+
+  }
+  .chapter-icon {
+    display: block;
+    float: left;
+    width: .7rem;
+    height: .4rem;
+    margin-top: .4rem;
+    background: blue;
+  }
+  .chapter-title {
+    float: left;
+    margin-left: .84rem;
+    margin-top: 0.2rem;
+  }
+}
+
+#sync-info-bar {
+  height: 2.2rem;
+  border-top: solid 1px #ccc;
+
+  .sync-info-icon {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    background: blue;
+    margin-left: .8rem;
+    float: left;
+
+    .vertical-middle;
+  }
+  .sync-info-tips {
+    float: left;
+    width: 6.6rem;
+    margin-left: .8rem;
+
+    .vertical-middle;
   }
 }

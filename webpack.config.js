@@ -11,6 +11,7 @@ const commonCfg = {
       'mobx',
       'mobx-react',
       'mobx-react-devtools',
+      'moment',
       'react',
       'react-dom',
       'react-hot-loader'

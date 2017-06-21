@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as moment from 'moment'
 import { observable, action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Radio } from 'antd'
@@ -20,12 +21,18 @@ const tabs = [
   }
 ]
 
+function syncTimeFormat(time: moment.Moment): string {
+  // todo: Format time according to how far the moment is.
+
+  return time.format('h:m A')
+}
+
 const SyncInfoBar = observer((props: { syncInfo: ISyncInfo }) => {
   const {syncInfo} = props
   let syncTips = ''
   switch (syncInfo.state) {
     case SyncState.DONE:
-      let time = syncInfo.lastSyncedTime
+      let time = syncTimeFormat(syncInfo.lastSyncedTime)
       syncTips = `${i18n('lastSynced')}: ${time}`
       break
     case SyncState.DOING:
@@ -36,9 +43,9 @@ const SyncInfoBar = observer((props: { syncInfo: ISyncInfo }) => {
   }
 
   return (
-    <div onClick={() => {appState.getData()}}>
-      <img />
-      <div>{syncTips}</div>
+    <div id="sync-info-bar" onClick={() => {appState.getData()}}>
+      <span className="sync-info-icon" />
+      <div className="sync-info-tips">{syncTips}</div>
     </div>
   )
 })

@@ -1,38 +1,41 @@
 import * as React from 'react'
-import { EventHandler } from 'react'
+import { EventHandler, ReactChildren } from 'react'
 import { observer } from 'mobx-react'
 import { i18n } from '../../stores/I18nStore'
 import { ChapterType } from '../../stores/constants'
 import appState, { IChapter, IChapterGroup, IBook, INotesOfTags } from '../../stores/AppState'
 
 function CollectionHead(props: {
-  icon: string, name: string, onClick: EventHandler<any>, notesNum?: number
+  iconClass: string, name: string, onClick: EventHandler<any>,
+  notesNum?: number, children?: ReactChildren
 }) {
-  const {icon, name, onClick, notesNum = -1} = props
+  const {iconClass, name, onClick, notesNum = -1, children} = props
   return (
-    <div onClick={onClick}>
+    <div className="collection-head" onClick={onClick}>
       <div className="collection-icon">
-        <img src={icon} />
+        <span className={iconClass} />
       </div>
       <div className="collection-title">{name}</div>
       {notesNum > -1 ? <div className="collection-number">{notesNum}</div> : null}
+      {children}
     </div>
   )
 }
 
 function AddNotebooks() {
   return (
-    <div>
-
-    </div>
+    <div className="add-notebooks-btn" role="button"> + </div>
   )
 }
 
 function BookHead(props: { color: string, name: string }) {
   const {color, name} = props
   return (
-    <div>
-      <span className="book-icon" style={{color: color}}>i</span>
+    <div className="book-head">
+      <span className="book-arrow" />
+      <div className="book-icon">
+        <span className='' style={{color: color}} />
+      </div>
       <div className="book-title">{name}</div>
     </div>
   )
@@ -41,8 +44,8 @@ function BookHead(props: { color: string, name: string }) {
 const Chapter = observer((props: { chapter: IChapter }) => {
   const {chapter} = props
   return (
-    <div onClick={() => appState.showNotes(chapter.notes)}>
-      <span className="chapter-icon" style={{color: chapter.color}}>i</span>
+    <div className="chapter" onClick={() => appState.showNotes(chapter.notes)}>
+      <span className="chapter-icon" style={{color: chapter.color}} />
       <div className="chapter-title">{chapter.name}</div>
     </div>
   )
@@ -51,9 +54,10 @@ const Chapter = observer((props: { chapter: IChapter }) => {
 const ChapterGroup = observer((props: { group: IChapterGroup }) => {
   const {group} = props
   return (
-    <div>
+    <div className="chapter-group">
       <div>
-        <span className="chapter-group-icon" style={{color: group.color}}>i</span>
+        <span className="chapter-arrow" />
+        <span className="chapter-group-icon" style={{color: group.color}} />
         <div className="chapter-group-title">{group.name}</div>
       </div>
       <Chapters chapters={group.chapters} />
@@ -64,7 +68,7 @@ const ChapterGroup = observer((props: { group: IChapterGroup }) => {
 const Chapters = observer((props: { chapters: Array<IChapter | IChapterGroup> }): any => {
   const {chapters} = props
   return (
-    <div>
+    <div className="chapters">
       {
         chapters.map((chapter, i) => {
           switch (chapter.type) {
@@ -84,7 +88,7 @@ const Chapters = observer((props: { chapters: Array<IChapter | IChapterGroup> })
 const Book = observer((props: { book: IBook }) => {
   const {book} = props
   return (
-    <div>
+    <div className="book">
       <BookHead color={book.color} name={book.name} />
       <Chapters chapters={book.chapters} />
     </div>
@@ -94,7 +98,7 @@ const Book = observer((props: { book: IBook }) => {
 const Books = observer((props: { books: IBook[] }) => {
   const {books} = props
   return (
-    <div>
+    <div className="books">
       {
         books.map((book, i) => <Book book={book} key={i} />)
       }
@@ -103,25 +107,26 @@ const Books = observer((props: { books: IBook[] }) => {
 })
 
 const Collection = observer((props: {
-  icon: string, name: string, notes: number[], onClick: EventHandler<any>
+  iconClass: string, name: string, notes: number[], onClick: EventHandler<any>
 }) => {
-  const {icon, name, notes, onClick} = props
+  const {iconClass, name, notes, onClick} = props
   return (
     <CollectionHead
-      icon={icon} name={name} notesNum={notes.length} onClick={onClick}
+      iconClass={iconClass} name={name} notesNum={notes.length} onClick={onClick}
     />
   )
 })
 
 const CollectionWithBooks = observer((props: {
-  icon: string, name: string, books: IBook[]
+  iconClass: string, name: string, books: IBook[]
 }) => {
-  const {icon, name, books} = props
+  const {iconClass, name, books} = props
   const clickHandler = () => {}
   return (
-    <div>
-      <CollectionHead icon={icon} name={name} onClick={clickHandler} />
-      <AddNotebooks />
+    <div className="collection-with-books">
+      <CollectionHead iconClass={iconClass} name={name} onClick={clickHandler}>
+        <AddNotebooks />
+      </CollectionHead>
       <Books books={books} />
     </div>
   )
@@ -130,16 +135,16 @@ const CollectionWithBooks = observer((props: {
 export const Notebooks = observer((props: { appState: any }) => {
   const {appState} = props
   return (
-    <div>
+    <div id="notebooks">
       <Collection
-        icon="" name={i18n('recents')} notes={appState.recents}
+        iconClass="" name={i18n('recents')} notes={appState.recents}
         onClick={() => appState.showNotes(appState.recents)}
       />
       <Collection
-        icon="" name={i18n('trash')} notes={appState.notesInTrash}
+        iconClass="" name={i18n('trash')} notes={appState.notesInTrash}
         onClick={() => appState.showNotes(appState.notesInTrash)}
       />
-      <CollectionWithBooks icon="" name={i18n('notebooks')} books={appState.notebooks} />
+      <CollectionWithBooks iconClass="" name={i18n('notebooks')} books={appState.notebooks} />
     </div>
   )
 })
@@ -147,14 +152,14 @@ export const Notebooks = observer((props: { appState: any }) => {
 const Tag = observer((props: { tag: string, notes: number[] }) => {
   const {tag, notes} = props
   return (
-    <div onClick={() => appState.showNotes(notes)}>{tag}</div>
+    <div className="tag" onClick={() => appState.showNotes(notes)}>{tag}</div>
   )
 })
 
 export const Tags = observer((props: { notesOfTags: INotesOfTags }) => {
   const {notesOfTags} = props
   return (
-    <div>
+    <div id="tags">
       {
         Object.keys(notesOfTags).map(tag => {
           return <Tag tag={tag} notes={notesOfTags[tag]} key={tag} />

@@ -21,8 +21,8 @@ export default class App extends React.Component<any, void> {
 
         <div className="for-debug">
           <button onClick={() => i18nStore.toggleLanguage()}>Switch language</button>
+          <DevTools />
         </div>
-        <DevTools />
       </div>
     )
   }

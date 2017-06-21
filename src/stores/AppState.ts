@@ -1,5 +1,6 @@
 import { observable, action, computed, useStrict } from 'mobx'
 import { merge } from 'lodash'
+import * as moment from 'moment'
 import { NoteType, ChapterType, Color, SyncState, NoteActionType } from './constants'
 useStrict(true)
 
@@ -29,7 +30,7 @@ export interface INoteData {
   contentType: NoteType
   content: string
   deleted: boolean
-  deletedTime?: Date
+  deletedTime?: moment.Moment
   tags: string[]
   id: number
 }
@@ -40,7 +41,7 @@ export interface INotesOfTags {
 
 export interface ISyncInfo {
   state: SyncState
-  lastSyncedTime: Date
+  lastSyncedTime: moment.Moment
 }
 
 export interface INotePath {
@@ -59,7 +60,7 @@ class AppState {
 
   @computed get notesInTrash(): number[] {
     const dataWithIndex: {
-      deletedTime: Date
+      deletedTime: moment.Moment
       index: number
     }[] = []
 
@@ -137,7 +138,7 @@ class AppState {
       case NoteActionType.DELETE:
         targetNote = this.allNoteData[this.showedNotes[noteI]]
         targetNote.deleted = true
-        targetNote.deletedTime = new Date()
+        targetNote.deletedTime = moment()
 
         this.showedNotes.splice(noteI, 1)
         break
@@ -170,7 +171,7 @@ class AppState {
   // sync info
   @observable syncInfo: ISyncInfo = {
     state: SyncState.DONE,
-    lastSyncedTime: new Date
+    lastSyncedTime: moment()
   }
 
   constructor() {
@@ -214,7 +215,7 @@ class AppState {
         contentType: NoteType.HTML,
         content: 'Your 2nd note',
         deleted: true,
-        deletedTime: new Date(),
+        deletedTime: moment(),
         tags: [],
         id: 3
       },
@@ -227,26 +228,57 @@ class AppState {
         chapters: [
           {
             color: Color.BLUE,
-            name: 'Air Note',
+            name: 'Leanote',
             type: ChapterType.CHAPTER,
             notes: [0, 1]
           },
           {
             color: Color.BLUE,
-            name: 'Air Note Group',
-            type: ChapterType.GROUP,
-            chapters: [
-              {
-                color: Color.BLUE,
-                name: 'Air Note',
-                type: ChapterType.CHAPTER,
-                notes: [2]
-              }
-            ]
-          }
+            name: 'Explore',
+            type: ChapterType.CHAPTER,
+            notes: [2]
+          },
         ]
-      }
+      },
+      {
+        color: Color.RED,
+        name: 'Start here',
+        chapters: []
+      },
+      {
+        color: Color.RED,
+        name: 'Summer',
+        chapters: []
+      },
     ]
+
+    /*this.notebooks = [
+     {
+     color: Color.RED,
+     name: 'User guide',
+     chapters: [
+     {
+     color: Color.BLUE,
+     name: 'Air Note',
+     type: ChapterType.CHAPTER,
+     notes: [0, 1]
+     },
+     {
+     color: Color.BLUE,
+     name: 'Air Note Group',
+     type: ChapterType.GROUP,
+     chapters: [
+     {
+     color: Color.BLUE,
+     name: 'Air Note',
+     type: ChapterType.CHAPTER,
+     notes: [2]
+     }
+     ]
+     }
+     ]
+     }
+     ]*/
 
     this.recents = [0, 1]
   }
