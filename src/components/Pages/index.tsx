@@ -52,4 +52,3 @@ export default class Pages extends React.Component<EmptyProps, void> {
     )
   }
 }
-

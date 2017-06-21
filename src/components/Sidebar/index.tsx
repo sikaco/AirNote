@@ -33,7 +33,7 @@ const SyncInfoBar = observer((props: { syncInfo: ISyncInfo }) => {
   let syncTips = ''
   switch (syncInfo.state) {
     case SyncState.DONE:
-      let time = syncTimeFormat(syncInfo.lastSyncedTime)
+      const time = syncTimeFormat(syncInfo.lastSyncedTime)
       syncTips = `${i18n('lastSynced')}: ${time}`
       break
     case SyncState.DOING:

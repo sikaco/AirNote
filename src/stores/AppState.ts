@@ -79,7 +79,7 @@ class AppState {
   }
 
   @computed get notesOfTags(): INotesOfTags {
-    let notesOfTags: INotesOfTags = {}
+    const notesOfTags: INotesOfTags = {}
     this.allNoteData.forEach((note, i) => {
       note.tags.forEach(tag => {
         notesOfTags[tag] = notesOfTags[tag] || []
@@ -146,13 +146,11 @@ class AppState {
         targetNote = this.allNoteData[this.showedNotes[noteI]]
         merge(targetNote, newNote)
         break
-      default:
-        console.log('Unknown NoteActionType')
     }
   }
 
   @action moveNote(fromPath: INotePath, destPath: INotePath) {
-
+    // todo
   }
 
   @action modifyNote(action: NoteActionType, notePath: INotePath, newNote?: INoteData) {
@@ -163,8 +161,6 @@ class AppState {
         break
       case NoteActionType.UPDATE:
         break
-      default:
-        console.log('Unknown NoteActionType')
     }
   }
 
@@ -179,7 +175,7 @@ class AppState {
   }
 
   @action getData(): void {
-    //TODO: ajax
+    // TODO: ajax
 
     this.allNoteData = [
       {

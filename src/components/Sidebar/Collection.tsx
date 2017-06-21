@@ -35,7 +35,7 @@ function BookHead(props: { color: string, name: string }) {
     <div className="book-head">
       <span className="book-arrow" />
       <div className="book-icon">
-        <span className='' style={{color: color}} />
+        <span className="" style={{color}} />
       </div>
       <div className="book-title">{name}</div>
     </div>
@@ -126,7 +126,9 @@ const CollectionWithBooks = observer((props: {
   iconClass: string, name: string, books: IBook[]
 }) => {
   const {iconClass, name, books} = props
-  const clickHandler = () => {}
+  const clickHandler = () => {
+    // todo
+  }
   return (
     <div className="collection-with-books">
       <CollectionHead iconClass={iconClass} name={name} onClick={clickHandler}>

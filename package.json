@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "A note app just like air, concise but necessary.",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "npm run lint && webpack-dev-server",
+    "lint": "tslint \"./src/!(types)/**/*.ts?(x)\" || true"
   },
   "keywords": [
     "react",
