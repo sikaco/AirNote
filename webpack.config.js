@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const Merge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const HappyPack = require('happypack')
 
 const commonCfg = {
   entry: {
@@ -52,28 +53,38 @@ const devCfg = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: ['babel-loader', 'ts-loader'],
+        loader: 'happypack/loader?id=ts',
         exclude: /node_modules/
       },
       {
         test: /\.(less|css)$/,
-        use: [{
-          loader: 'style-loader'
-        }, {
-          loader: 'css-loader',
-          options: {
-            sourceMap: true
-          }
-        }, {
-          loader: 'less-loader',
-          options: {
-            sourceMap: true
-          }
-        }],
+        loader: 'happypack/loader?id=less'
       }
     ],
   },
   plugins: [
+    new HappyPack({
+      id: 'ts',
+      loaders: [{
+        loader: 'babel-loader'
+      }, {
+        path: 'ts-loader',
+        query: {happyPackMode: true}
+      }]
+    }),
+    new HappyPack({
+      id: 'less',
+      loaders: [{
+        loader: 'style-loader'
+      }, {
+        loader: 'css-loader',
+      },
+        {
+          path: 'less-loader',
+          query: {sourceMap: true}
+        }
+      ]
+    }),
     new webpack.optimize.CommonsChunkPlugin({
       name: [
         'vendor', // 指定公共 bundle 的名字。
@@ -103,7 +114,7 @@ const prodCfg = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: ['babel-loader', 'ts-loader'],
+        loader: 'happypack/loader?id=ts',
         exclude: /node_modules/
       },
       {
@@ -115,6 +126,15 @@ const prodCfg = {
     ]
   },
   plugins: [
+    new HappyPack({
+      id: 'ts',
+      loaders: [{
+        loader: 'babel-loader'
+      }, {
+        path: 'ts-loader',
+        query: {happyPackMode: true}
+      }]
+    }),
     new webpack.optimize.CommonsChunkPlugin({
       name: [
         'vendor', // 指定公共 bundle 的名字。
