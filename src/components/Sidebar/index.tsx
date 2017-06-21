@@ -5,6 +5,7 @@ import { observer } from 'mobx-react'
 import { Radio } from 'antd'
 import './index.less'
 
+import { EmptyProps, FormInputEvent } from '../../types'
 import { i18n } from '../../stores/I18nStore'
 import appState, { ISyncInfo } from '../../stores/AppState'
 import { Notebooks, Tags } from './Collection'
@@ -59,17 +60,17 @@ class ComponentStore {
 }
 
 @observer
-export default class Sidebar extends React.Component<any, void> {
+export default class Sidebar extends React.Component<EmptyProps, void> {
   store: ComponentStore
 
-  constructor(props: any) {
+  constructor(props: EmptyProps) {
     super(props)
 
     this.store = new ComponentStore()
   }
 
-  handleTabChange = (e: any) => {
-    this.store.changeTab(e.target.value)
+  handleTabChange = (e: FormInputEvent) => {
+    this.store.changeTab(Number(e.target.value))
   }
 
   render() {

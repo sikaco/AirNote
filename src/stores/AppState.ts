@@ -285,3 +285,4 @@ class AppState {
 }
 
 export default new AppState()
+export { AppState }

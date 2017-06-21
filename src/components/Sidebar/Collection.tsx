@@ -1,12 +1,13 @@
 import * as React from 'react'
-import { EventHandler, ReactChildren } from 'react'
+import { MouseEventHandler, ReactChildren, ReactElement } from 'react'
 import { observer } from 'mobx-react'
+
 import { i18n } from '../../stores/I18nStore'
 import { ChapterType } from '../../stores/constants'
-import appState, { IChapter, IChapterGroup, IBook, INotesOfTags } from '../../stores/AppState'
+import appState, { IChapter, IChapterGroup, IBook, INotesOfTags, AppState } from '../../stores/AppState'
 
 function CollectionHead(props: {
-  iconClass: string, name: string, onClick: EventHandler<any>,
+  iconClass: string, name: string, onClick: MouseEventHandler<HTMLDivElement>,
   notesNum?: number, children?: ReactChildren
 }) {
   const {iconClass, name, onClick, notesNum = -1, children} = props
@@ -65,7 +66,11 @@ const ChapterGroup = observer((props: { group: IChapterGroup }) => {
   )
 })
 
-const Chapters = observer((props: { chapters: Array<IChapter | IChapterGroup> }): any => {
+// TS will report errors if not to do this
+interface IChaptersProps {
+  chapters: Array<IChapter | IChapterGroup>
+}
+const Chapters = observer((props: IChaptersProps): ReactElement<IChaptersProps> => {
   const {chapters} = props
   return (
     <div className="chapters">
@@ -107,7 +112,7 @@ const Books = observer((props: { books: IBook[] }) => {
 })
 
 const Collection = observer((props: {
-  iconClass: string, name: string, notes: number[], onClick: EventHandler<any>
+  iconClass: string, name: string, notes: number[], onClick: MouseEventHandler<HTMLDivElement>
 }) => {
   const {iconClass, name, notes, onClick} = props
   return (
@@ -132,7 +137,7 @@ const CollectionWithBooks = observer((props: {
   )
 })
 
-export const Notebooks = observer((props: { appState: any }) => {
+export const Notebooks = observer((props: { appState: AppState }) => {
   const {appState} = props
   return (
     <div id="notebooks">

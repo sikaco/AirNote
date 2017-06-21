@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 
+import { EmptyProps } from '../../types'
 import appState, { INoteData } from '../../stores/AppState'
 import { i18n } from '../../stores/I18nStore'
 import { NoteType } from '../../stores/constants'
@@ -40,7 +41,7 @@ const SearchInPages = observer(() =>
 )
 
 @observer
-export default class Pages extends React.Component<any, void> {
+export default class Pages extends React.Component<EmptyProps, void> {
   render() {
     return (
       <div id="pages">
