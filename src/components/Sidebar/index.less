@@ -44,6 +44,9 @@
   .collection {
     .click-able;
   }
+  .collection-with-books {
+    .not-select-able;
+  }
   .collection-head {
     display: flex;
     align-items: center;
@@ -65,10 +68,17 @@
     text-align: right;
   }
 
-  .add-notebooks-btn {
+  .add-notebooks-btn-wrap {
     flex: 1;
-    line-height: @collection-height;
-    text-align: right;
+    line-height: 1.5rem;
+  }
+  .add-notebooks-btn {
+    float: right;
+    width: 1.5rem;
+    text-align: center;
+    position: relative;
+    margin-right: 0;
+    right: -.55rem;
 
     .click-able;
   }
@@ -80,10 +90,12 @@
 
   }
   .book {
-    padding: 0.48rem 0 .4rem;
+    //padding: 0.48rem 0 .4rem;
   }
   .book-head {
-    height: 1.1rem;
+    display: flex;
+    align-items: center;
+    height: @collection-height;
     padding: 0 @book-height;
 
     .click-able;
@@ -92,34 +104,31 @@
     background: @test-bg-color;
     width: .69rem;
     height: .69rem;
-    float: left;
-
-    .vertical-middle;
   }
   .book-icon {
     background: @test-bg-color;
     width: 0.8rem;
     height: 1rem;
     margin-left: 0.76rem;
-    float: left;
   }
   .book-title {
-    float: left;
     margin-left: .92rem;
     font-size: .65rem;
-    line-height: 1.1rem;
   }
 
   /*
     chapter
    */
   .chapters {
-    padding-left: 2.4rem;
-    padding-top: .45rem;
+
   }
   .chapter {
-    overflow: hidden;
-    padding: .25rem 0;
+    display: flex;
+    align-items: center;
+    height: 1.78rem;
+    padding-left: 3.65rem;
+
+    .click-able;
   }
   .chapter-group {
 
@@ -129,16 +138,12 @@
   }
   .chapter-icon {
     display: block;
-    float: left;
     width: .7rem;
     height: .4rem;
-    margin-top: .4rem;
     background: @test-bg-color;
   }
   .chapter-title {
-    float: left;
     margin-left: .84rem;
-    margin-top: 0.2rem;
   }
 }
 
@@ -149,6 +154,8 @@
 #sync-info-bar {
   height: @bar-bottom-height;
   border-top: solid 1px @border-color;
+
+  .click-able;
 
   .sync-info-icon {
     display: block;

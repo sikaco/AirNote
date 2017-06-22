@@ -48,7 +48,9 @@ const devCfg = {
   devServer: {
     hot: true,	// 开启服务器的模块热替换(HMR)
     contentBase: resolve(__dirname, 'dist'),	// 输出文件的路径
-    publicPath: '/'	// 和上文 output 的“publicPath”值保持一致
+    publicPath: '/',	// 和上文 output 的“publicPath”值保持一致
+    host: '0.0.0.0',
+    disableHostCheck: true,
   },
   module: {
     rules: [

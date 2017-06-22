@@ -25,7 +25,9 @@ function CollectionHead(props: {
 
 function AddNotebooks() {
   return (
-    <div className="add-notebooks-btn" role="button"> + </div>
+    <div className="add-notebooks-btn-wrap">
+      <div className="add-notebooks-btn" role="button"> + </div>
+    </div>
   )
 }
 
