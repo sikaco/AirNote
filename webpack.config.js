@@ -4,6 +4,7 @@ const Merge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HappyPack = require('happypack')
+const autoprefixer = require('autoprefixer')
 
 const commonCfg = {
   entry: {
@@ -57,9 +58,13 @@ const devCfg = {
         exclude: /node_modules/
       },
       {
-        test: /\.(less|css)$/,
+        test: /\.(css)$/,
+        loader: 'happypack/loader?id=css'
+      },
+      {
+        test: /\.(less)$/,
         loader: 'happypack/loader?id=less'
-      }
+      },
     ],
   },
   plugins: [
@@ -73,17 +78,25 @@ const devCfg = {
       }]
     }),
     new HappyPack({
+      id: 'css',
+      loaders: [{
+        loader: 'style-loader'
+      }, {
+        path: 'css-loader',
+        query: {sourceMap: true}
+      }]
+    }),
+    new HappyPack({
       id: 'less',
       loaders: [{
         loader: 'style-loader'
       }, {
-        loader: 'css-loader',
-      },
-        {
-          path: 'less-loader',
-          query: {sourceMap: true}
-        }
-      ]
+        path: 'css-loader',
+        query: {sourceMap: true}
+      }, {
+        path: 'less-loader',
+        query: {sourceMap: true}
+      }]
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: [
@@ -120,7 +133,14 @@ const prodCfg = {
       {
         test: /\.(less|css)$/,
         use: ExtractTextPlugin.extract({
-          use: ['css-loader', 'less-loader']
+          use: ['css-loader', {
+            path: 'postcss-loader',
+            query: {
+              plugins: function () {
+                return [autoprefixer('last 2 versions', 'ie 10')]
+              }
+            }
+          },'less-loader']
         })
       }
     ]
@@ -134,6 +154,13 @@ const prodCfg = {
         path: 'ts-loader',
         query: {happyPackMode: true}
       }]
+    }),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        postcss: [
+          autoprefixer(),
+        ]
+      }
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: [

@@ -1,16 +1,27 @@
 @import "../variables";
 
+@sidebar-width: 9.5rem;
+@sidebar-horizon-padding: 1.03rem;
+@collection-height: 2.04rem;
+@book-height: 1.24rem;
+
 #sidebar {
-  width: 9.5rem;
-  min-width: 5rem;
-  height: 100%;
-  border-right: solid 1px @border-color;
   display: flex;
   flex-direction: column;
+  width: @sidebar-width;
+  min-width: @sidebar-width;
+  height: 100%;
+  border-right: solid 1px @border-color;
+
+  .sidebar-tabs-wrap {
+    display: flex;
+    align-items: center;
+    height: @bar-top-height;
+    padding: 0 @sidebar-horizon-padding;
+  }
 
   .sidebar-tabs {
-    margin: .35rem auto;
-    width: 7.4rem;
+    width: 100%;
     display: block;
     text-align: center;
   }
@@ -30,29 +41,36 @@
   /*
     collection
    */
+  .collection {
+    .click-able;
+  }
   .collection-head {
-    padding: 0.48rem 1.03rem;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 0 @sidebar-horizon-padding;
+    height: @collection-height;
   }
   .collection-icon {
-    background: gray;
-    float: left;
+    background: @test-bg-color;
     width: 1rem;
     height: 1rem;
   }
   .collection-title {
-    float: left;
     margin-left: .64rem;
     font-size: .7rem;
   }
   .collection-number {
-    float: right;
+    flex: 1;
     font-size: .68rem;
-    line-height: 1.1rem;
+    text-align: right;
   }
 
   .add-notebooks-btn {
-    float: right;
+    flex: 1;
+    line-height: @collection-height;
+    text-align: right;
+
+    .click-able;
   }
 
   /*
@@ -62,13 +80,16 @@
 
   }
   .book {
-    padding: 0.48rem 1.24rem .4rem;
+    padding: 0.48rem 0 .4rem;
   }
   .book-head {
     height: 1.1rem;
+    padding: 0 @book-height;
+
+    .click-able;
   }
   .book-arrow {
-    background: gray;
+    background: @test-bg-color;
     width: .69rem;
     height: .69rem;
     float: left;
@@ -76,7 +97,7 @@
     .vertical-middle;
   }
   .book-icon {
-    background: gray;
+    background: @test-bg-color;
     width: 0.8rem;
     height: 1rem;
     margin-left: 0.76rem;
@@ -112,7 +133,7 @@
     width: .7rem;
     height: .4rem;
     margin-top: .4rem;
-    background: gray;
+    background: @test-bg-color;
   }
   .chapter-title {
     float: left;
@@ -126,7 +147,7 @@
 }
 
 #sync-info-bar {
-  height: @bottom-bar-height;
+  height: @bar-bottom-height;
   border-top: solid 1px @border-color;
 
   .sync-info-icon {

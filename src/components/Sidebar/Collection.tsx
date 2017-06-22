@@ -116,9 +116,11 @@ const Collection = observer((props: {
 }) => {
   const {iconClass, name, notes, onClick} = props
   return (
-    <CollectionHead
-      iconClass={iconClass} name={name} notesNum={notes.length} onClick={onClick}
-    />
+    <div className="collection">
+      <CollectionHead
+        iconClass={iconClass} name={name} notesNum={notes.length} onClick={onClick}
+      />
+    </div>
   )
 })
 
