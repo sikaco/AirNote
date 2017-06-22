@@ -1,11 +1,10 @@
 @import "../variables";
 
 #sidebar {
-  flex: initial;
   width: 9.5rem;
   min-width: 5rem;
   height: 100%;
-  border-right: solid 1px #CCCCCC;
+  border-right: solid 1px @border-color;
   display: flex;
   flex-direction: column;
 
@@ -36,7 +35,7 @@
     overflow: hidden;
   }
   .collection-icon {
-    background: blue;
+    background: gray;
     float: left;
     width: 1rem;
     height: 1rem;
@@ -67,10 +66,9 @@
   }
   .book-head {
     height: 1.1rem;
-    background: gray;
   }
   .book-arrow {
-    background: blue;
+    background: gray;
     width: .69rem;
     height: .69rem;
     float: left;
@@ -78,7 +76,7 @@
     .vertical-middle;
   }
   .book-icon {
-    background: blue;
+    background: gray;
     width: 0.8rem;
     height: 1rem;
     margin-left: 0.76rem;
@@ -99,7 +97,6 @@
     padding-top: .45rem;
   }
   .chapter {
-    background: gray;
     overflow: hidden;
     padding: .25rem 0;
   }
@@ -115,7 +112,7 @@
     width: .7rem;
     height: .4rem;
     margin-top: .4rem;
-    background: blue;
+    background: gray;
   }
   .chapter-title {
     float: left;
@@ -124,9 +121,13 @@
   }
 }
 
+#tags {
+  flex: 1;
+}
+
 #sync-info-bar {
-  height: 2.2rem;
-  border-top: solid 1px #ccc;
+  height: @bottom-bar-height;
+  border-top: solid 1px @border-color;
 
   .sync-info-icon {
     display: block;

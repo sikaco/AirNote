@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
+import './index.less'
 
 import { EmptyProps } from '../../types'
 import appState, { INoteData } from '../../stores/AppState'
@@ -8,8 +9,10 @@ import { NoteType } from '../../stores/constants'
 
 const AddPage = observer(() => {
   return (
-    <div onClick={() => appState.addNewNote(NoteType.HTML)}>
-      <span>+</span>{i18n('newPage')}
+    <div id="add-page-btn" onClick={() => appState.addNewNote(NoteType.HTML)}>
+      <div className="btn-inner">
+        <span>+</span>{i18n('newPage')}
+      </div>
     </div>
   )
 })
@@ -17,7 +20,7 @@ const AddPage = observer(() => {
 const Page = observer((props: { note: INoteData }) => {
   const {note} = props
   return (
-    <div>
+    <div className="page-item">
       {note.title}
     </div>
   )
@@ -26,7 +29,7 @@ const Page = observer((props: { note: INoteData }) => {
 const PageList = observer((props: { noteDataList: INoteData[] }) => {
   const {noteDataList} = props
   return (
-    <div>
+    <div className="page-list">
       {
         noteDataList.map(note => <Page note={note} key={note.id} />)
       }
@@ -35,7 +38,7 @@ const PageList = observer((props: { noteDataList: INoteData[] }) => {
 })
 
 const SearchInPages = observer(() =>
-  <div>
+  <div id="search-in-pages">
 
   </div>
 )

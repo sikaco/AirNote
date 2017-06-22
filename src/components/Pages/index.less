@@ -1,0 +1,30 @@
+@import "../variables";
+
+#pages {
+  display: flex;
+  flex-direction: column;
+  width: 9.2rem;
+  min-width: 9.2rem;
+  border-right: solid 1px @border-color;
+
+  .page-list {
+    flex: 1;
+  }
+}
+
+#add-page-btn {
+  height: 2rem;
+  border-bottom: solid 1px @border-color;
+
+  .btn-inner {
+    text-align: center;
+    font-size: .6rem;
+
+    .vertical-middle()
+  }
+}
+
+#search-in-pages {
+  height: @bottom-bar-height;
+  border-top: solid 1px @border-color;
+}

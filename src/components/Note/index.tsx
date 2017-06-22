@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
+import './index.less'
 
 import { EmptyProps } from '../../types'
 
