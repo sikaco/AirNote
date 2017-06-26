@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import './index.less'
 
 import { EmptyProps } from '../../types'
-import appState, { INoteData } from '../../stores/AppState'
+import appState, { NoteData } from '../../stores/AppState'
 import { i18n } from '../../stores/I18nStore'
 import { NoteType } from '../../stores/constants'
 
@@ -17,7 +17,7 @@ const AddPage = observer(() => {
   )
 })
 
-const Page = observer((props: { note: INoteData }) => {
+const Page = observer((props: { note: NoteData }) => {
   const {note} = props
   return (
     <div className="page-item">
@@ -26,7 +26,7 @@ const Page = observer((props: { note: INoteData }) => {
   )
 })
 
-const PageList = observer((props: { noteDataList: INoteData[] }) => {
+const PageList = observer((props: { noteDataList: NoteData[] }) => {
   const {noteDataList} = props
   return (
     <div className="page-list">

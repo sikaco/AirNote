@@ -7,6 +7,9 @@ interface Ii18nConfig {
 }
 
 const i18nConfig: Ii18nConfig = {
+  /*
+    words
+   */
   notebooks: {
     zh: '笔记本',
     en: 'Notebooks'
@@ -39,6 +42,30 @@ const i18nConfig: Ii18nConfig = {
     zh: '新建页',
     en: 'New Page'
   },
+  untitledNotebook: {
+    zh: '未命名',
+    en: 'Untitled Notebook'
+  },
+  untitledChapter: {
+    zh: '新建章节',
+    en: 'Untitled Chapter'
+  },
+  untitledGroup: {
+    zh: '新建章节组',
+    en: 'Untitled Group'
+  },
+  untitledNote: {
+    zh: '新建笔记',
+    en: 'Untitled Note'
+  },
+
+  /*
+    sentences
+   */
+  pleaseInputNotebookName: {
+    zh: '请输入笔记本名称',
+    en: 'Please input notebook name'
+  },
 }
 
 const supportLang = ['en', 'zh']
@@ -46,13 +73,13 @@ const supportLang = ['en', 'zh']
 class I18nStore {
   @observable language = ''
 
-  @action switchLanguage(lang: string): void {
+  @action switchLanguage(lang: string) {
     if (supportLang.indexOf(lang) > -1) {
       this.language = lang
     }
   }
 
-  @action toggleLanguage(): void {
+  @action toggleLanguage() {
     this.language = this.language === 'en' ? 'zh' : 'en'
   }
 

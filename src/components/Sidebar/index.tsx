@@ -25,7 +25,11 @@ const tabs = [
 function syncTimeFormat(time: moment.Moment): string {
   // todo: Format time according to how far the moment is.
 
-  return time.format('h:m A')
+  if (!time) {
+    return '--:--'
+  }
+
+  return time.format('hh:mm A')
 }
 
 const SyncInfoBar = observer((props: { syncInfo: ISyncInfo }) => {
@@ -54,7 +58,7 @@ const SyncInfoBar = observer((props: { syncInfo: ISyncInfo }) => {
 class ComponentStore {
   @observable tabIndex = 0
 
-  @action changeTab(index: number): void {
+  @action changeTab(index: number) {
     this.tabIndex = index
   }
 }

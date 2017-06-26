@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 
 import { i18n } from '../../stores/I18nStore'
 import { ChapterType } from '../../stores/constants'
-import appState, { IChapter, IChapterGroup, IBook, INotesOfTags, AppState } from '../../stores/AppState'
+import appState, { Chapter, ChapterGroup, Book, INotesOfTags, AppState } from '../../stores/AppState'
 
 function CollectionHead(props: {
   iconClass: string, name: string, onClick: MouseEventHandler<HTMLDivElement>,
@@ -24,9 +24,16 @@ function CollectionHead(props: {
 }
 
 function AddNotebooks() {
+  const addBook = () => {
+    const notebookName = prompt(i18n('pleaseInputNotebookName'), '')
+    if (notebookName !== null) {
+      appState.addBook('red', notebookName)
+    }
+  }
+
   return (
     <div className="add-notebooks-btn-wrap">
-      <div className="add-notebooks-btn" role="button"> + </div>
+      <div className="add-notebooks-btn" role="button" onClick={addBook}> + </div>
     </div>
   )
 }
@@ -39,29 +46,29 @@ function BookHead(props: { color: string, name: string }) {
       <div className="book-icon">
         <span className="" style={{color}} />
       </div>
-      <div className="book-title">{name}</div>
+      <div className="book-title">{name || i18n('untitledNotebook')}</div>
     </div>
   )
 }
 
-const Chapter = observer((props: { chapter: IChapter }) => {
+const ChapterComponent = observer((props: { chapter: Chapter }) => {
   const {chapter} = props
   return (
     <div className="chapter" onClick={() => appState.showNotes(chapter.notes)}>
       <span className="chapter-icon" style={{color: chapter.color}} />
-      <div className="chapter-title">{chapter.name}</div>
+      <div className="chapter-title">{chapter.name || i18n('untitledChapter')}</div>
     </div>
   )
 })
 
-const ChapterGroup = observer((props: { group: IChapterGroup }) => {
+const ChapterGroupComponent = observer((props: { group: ChapterGroup }) => {
   const {group} = props
   return (
     <div className="chapter-group">
       <div>
         <span className="chapter-arrow" />
         <span className="chapter-group-icon" style={{color: group.color}} />
-        <div className="chapter-group-title">{group.name}</div>
+        <div className="chapter-group-title">{group.name || i18n('untitledGroup')}</div>
       </div>
       <Chapters chapters={group.chapters} />
     </div>
@@ -70,7 +77,7 @@ const ChapterGroup = observer((props: { group: IChapterGroup }) => {
 
 // TS will report errors if not to do this
 interface IChaptersProps {
-  chapters: Array<IChapter | IChapterGroup>
+  chapters: Array<Chapter | ChapterGroup>
 }
 const Chapters = observer((props: IChaptersProps): ReactElement<IChaptersProps> => {
   const {chapters} = props
@@ -80,9 +87,9 @@ const Chapters = observer((props: IChaptersProps): ReactElement<IChaptersProps> 
         chapters.map((chapter, i) => {
           switch (chapter.type) {
             case ChapterType.CHAPTER:
-              return <Chapter chapter={chapter as IChapter} key={i} />
+              return <ChapterComponent chapter={chapter as Chapter} key={i} />
             case ChapterType.GROUP:
-              return <ChapterGroup group={chapter as IChapterGroup} key={i} />
+              return <ChapterGroupComponent group={chapter as ChapterGroup} key={i} />
             default:
               return null
           }
@@ -92,7 +99,7 @@ const Chapters = observer((props: IChaptersProps): ReactElement<IChaptersProps> 
   )
 })
 
-const Book = observer((props: { book: IBook }) => {
+const BookComponent = observer((props: { book: Book }) => {
   const {book} = props
   return (
     <div className="book">
@@ -102,12 +109,12 @@ const Book = observer((props: { book: IBook }) => {
   )
 })
 
-const Books = observer((props: { books: IBook[] }) => {
+const Books = observer((props: { books: Book[] }) => {
   const {books} = props
   return (
     <div className="books">
       {
-        books.map((book, i) => <Book book={book} key={i} />)
+        books.map((book, i) => <BookComponent book={book} key={i} />)
       }
     </div>
   )
@@ -127,7 +134,7 @@ const Collection = observer((props: {
 })
 
 const CollectionWithBooks = observer((props: {
-  iconClass: string, name: string, books: IBook[]
+  iconClass: string, name: string, books: Book[]
 }) => {
   const {iconClass, name, books} = props
   const clickHandler = () => {
