@@ -1,9 +1,9 @@
-import { observable, action, computed, useStrict } from 'mobx'
+import { observable, action, computed, useStrict, toJS } from 'mobx'
 import _ from 'lodash'
 import * as moment from 'moment'
 
-import { NoteType, SyncState, NoteActionType } from './constants'
-import { Book, Chapter, NoteData } from './classes'
+import { NoteType, SyncState, NoteAction } from './constants'
+import { Book, Chapter, ChapterGroup, NoteData } from './classes'
 import { mockForUi } from './mock'
 useStrict(true)
 
@@ -17,18 +17,50 @@ export interface ISyncInfo {
   lastSyncedTime: moment.Moment
 }
 
-export interface INotePath {
-  [index: number]: { path: number | string }
-}
+type INotePath = Array<number>
+type INode = Book | Chapter | ChapterGroup | NoteData
 
 class AppState {
   @observable allNoteData: NoteData[] = [] // all note contents
   @observable notebooks: Book[] = [] // notebooks
   @observable recents: number[] = []  // collections
-  @observable showedNotes: number[] = []  // pages of note
   @observable syncInfo: ISyncInfo = { // sync info
     state: SyncState.DONE,
     lastSyncedTime: null
+  }
+
+  private setId2NotePathMap(
+    arr: Array<Book | ChapterGroup | Chapter>, m: Map<number, INotePath>,
+    parentPath: INotePath = []
+  ) {
+    arr.forEach((node, i) => {
+      const path = parentPath.concat([i])
+      m.set(node.id, path)
+
+      let subNodes = (node as Book | ChapterGroup).chapters
+      if (subNodes && subNodes.length > 0) {
+        this.setId2NotePathMap(subNodes, m, path)
+      }
+    })
+  }
+
+  @computed get id2NotePathMap(): Map<number, INotePath> {
+    const m: Map<number, INotePath> = new Map()
+
+    this.setId2NotePathMap(toJS(this.notebooks), m)
+
+    return m
+  }
+
+  @observable private focusedPath: INotePath = null
+  @observable private focusedNoteList: number[] = []  // pages of note
+  @computed get focusedNoteDataList(): NoteData[] {
+    return this.focusedNoteList.map(noteIndex => this.allNoteData[noteIndex])
+  }
+
+  @observable private focusedNote: number = null  // current showed note
+  @computed get focusedNoteData(): NoteData {
+    return this.allNoteData[this.focusedNote]
   }
 
   @computed get notesInTrash(): number[] {
@@ -63,100 +95,91 @@ class AppState {
     return notesOfTags
   }
 
-  @computed get showedNoteData(): NoteData[] {
-    return this.showedNotes.map(noteIndex => this.allNoteData[noteIndex])
-  }
-
   /**
    * actions
    */
 
-  @action addBook(color: string, name: string) {
+  @action addBook(color: string, name: string) {  // todo
     const noteData = new NoteData(NoteType.HTML)
     this.allNoteData.push(noteData)
+    const noteIndex = this.allNoteData.length - 1
 
-    // todo: chapterColor should be random in a set
-    const chapter = new Chapter('red', '')
-    chapter.addNote(this.allNoteData.length - 1)
+    const newChapter = new Chapter('red', '') // todo: chapterColor should be random in a set
+    newChapter.addNote(noteIndex)
 
-    const book = new Book(color, name)
-    book.addChapter(chapter)
+    const newBook = new Book(color, name)
+    newBook.addChapter(newChapter)
 
-    this.notebooks.push(book)
+    // mount new notebook and focus first note of it
+    this.notebooks.push(newBook)
+    this.focusNoteList(newChapter.notes)
+    this.focusNote(noteIndex)
+  }
+
+  @action createNewNote(noteType: NoteType) {
+    const newNote = new NoteData(noteType)
+    this.modifyNode(NoteAction.ADD, this.focusedPath, newNote)
   }
 
   /*
-   chapters
+   focus
    */
+
+  @action focusNoteList(notes: number[], currentPath?: INotePath) {
+    this.focusedNoteList = notes
+    if (currentPath) {
+      this.focusedPath = currentPath
+    }
+  }
+
+  @action focusNote(noteIndex: number) {
+    this.focusedNote = noteIndex
+  }
 
   /*
-   notes
+   modified
    */
 
-  @action showNotes(notes: number[]) {
-    this.showedNotes = notes
-  }
-
-  @action addNewNote(noteType: NoteType) {
-    const blankNote: NoteData = {
-      layer: 0,
-      title: 'Untitled Note', // todo: For debug now. After debugged, it will be ''.
-      contentType: noteType,
-      content: '',
-      deleted: false,
-      tags: [],
-      id: 0
+  @action modifyNode(action: NoteAction, path: INotePath, newNode?: INode) {
+    switch (action) {
+      case NoteAction.ADD:
+        break
+      case NoteAction.DELETE:
+        break
+      case NoteAction.UPDATE:
+        break
     }
 
-    this.modifyNoteInCurrentChapter(NoteActionType.ADD, null, blankNote)
-  }
-
-  @action moveNoteInCurrentChapter(fromI: number, destI: number) {
-    if (fromI === destI) { return }
-    if (fromI < destI) {
-      this.showedNotes.splice(destI, 0, this.showedNotes[fromI])
-      this.showedNotes.splice(fromI, 1)
-    } else {
-      const noteArr = this.showedNotes.splice(fromI, 1)
-      this.showedNotes.splice(destI, 0, noteArr[0])
-    }
-  }
-
-  @action modifyNoteInCurrentChapter(action: NoteActionType, noteI?: number, newNote?: NoteData) {
     let targetNote: NoteData = null
 
-    switch (action) {
-      case NoteActionType.ADD:
-        this.allNoteData.push(newNote)
-        this.showedNotes.push(this.allNoteData.length - 1)
-        break
-      case NoteActionType.DELETE:
-        targetNote = this.allNoteData[this.showedNotes[noteI]]
-        targetNote.deleted = true
-        targetNote.deletedTime = moment()
+    /*switch (action) {   // todo
+     case NoteAction.ADD:
+     this.allNoteData.push(newNode)
+     this.focusedNoteList.push(this.allNoteData.length - 1)
+     break
+     case NoteAction.DELETE:
+     targetNote = this.allNoteData[this.focusedNoteList[noteI]]
+     targetNote.deleted = true
+     targetNote.deletedTime = moment()
 
-        this.showedNotes.splice(noteI, 1)
-        break
-      case NoteActionType.UPDATE:
-        targetNote = this.allNoteData[this.showedNotes[noteI]]
-        _.merge(targetNote, newNote)
-        break
-    }
+     this.focusedNoteList.splice(noteI, 1)
+     break
+     case NoteAction.UPDATE:
+     targetNote = this.allNoteData[this.focusedNoteList[noteI]]
+     _.merge(targetNote, newNode)
+     break
+     }*/
   }
 
-  @action moveNote(fromPath: INotePath, destPath: INotePath) {
-    // todo
-  }
-
-  @action modifyNote(action: NoteActionType, notePath: INotePath, newNote?: NoteData) {
-    switch (action) {
-      case NoteActionType.ADD:
-        break
-      case NoteActionType.DELETE:
-        break
-      case NoteActionType.UPDATE:
-        break
-    }
+  @action moveNode(fromPath: INotePath, toPath: INotePath) {
+    /*if (fromI === destI) { return }
+     if (fromI < destI) {
+     this.focusedNoteList.splice(destI, 0, this.focusedNoteList[fromI])
+     this.focusedNoteList.splice(fromI, 1)
+     } else {
+     const noteArr = this.focusedNoteList.splice(fromI, 1)
+     this.focusedNoteList.splice(destI, 0, noteArr[0])
+     }*/
   }
 
   constructor() {
@@ -164,15 +187,15 @@ class AppState {
   }
 
   @action getData() {
-    // const {allNoteData, notebooks, recents} = mockForUi
-    // this.allNoteData = allNoteData
-    // this.notebooks = notebooks
-    // this.recents = recents
+    const {allNoteData, notebooks, recents} = mockForUi
+    this.allNoteData = allNoteData
+    this.notebooks = notebooks
+    this.recents = recents
 
-    // this.syncInfo = {
-    //   state: SyncState.DONE,
-    //   lastSyncedTime: moment()
-    // }
+    this.syncInfo = {
+      state: SyncState.DONE,
+      lastSyncedTime: moment()
+    }
   }
 }
 

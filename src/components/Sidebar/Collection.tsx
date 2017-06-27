@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { MouseEventHandler, ReactChildren, ReactElement } from 'react'
+import { MouseEventHandler, ReactChildren, ReactElement, MouseEvent } from 'react'
 import { observer } from 'mobx-react'
 
 import { i18n } from '../../stores/I18nStore'
@@ -33,15 +33,15 @@ function AddNotebooks() {
 
   return (
     <div className="add-notebooks-btn-wrap">
-      <div className="add-notebooks-btn" role="button" onClick={addBook}> + </div>
+      <div className="add-notebooks-btn" role="button" onClick={addBook}> +</div>
     </div>
   )
 }
 
-function BookHead(props: { color: string, name: string }) {
-  const {color, name} = props
+function BookHead(props: { color: string, name: string, ctxMenuHandler: MouseEventHandler<HTMLDivElement> }) {
+  const {color, name, ctxMenuHandler} = props
   return (
-    <div className="book-head">
+    <div className="book-head" onContextMenu={ctxMenuHandler}>
       <span className="book-arrow" />
       <div className="book-icon">
         <span className="" style={{color}} />
@@ -53,8 +53,12 @@ function BookHead(props: { color: string, name: string }) {
 
 const ChapterComponent = observer((props: { chapter: Chapter }) => {
   const {chapter} = props
+  const clickHandler = () => {
+    appState.focusNoteList(chapter.notes, appState.id2NotePathMap.get(chapter.id))
+  }
+
   return (
-    <div className="chapter" onClick={() => appState.showNotes(chapter.notes)}>
+    <div className="chapter" onClick={clickHandler}>
       <span className="chapter-icon" style={{color: chapter.color}} />
       <div className="chapter-title">{chapter.name || i18n('untitledChapter')}</div>
     </div>
@@ -84,12 +88,12 @@ const Chapters = observer((props: IChaptersProps): ReactElement<IChaptersProps> 
   return (
     <div className="chapters">
       {
-        chapters.map((chapter, i) => {
+        chapters.map(chapter => {
           switch (chapter.type) {
             case ChapterType.CHAPTER:
-              return <ChapterComponent chapter={chapter as Chapter} key={i} />
+              return <ChapterComponent chapter={chapter as Chapter} key={chapter.id} />
             case ChapterType.GROUP:
-              return <ChapterGroupComponent group={chapter as ChapterGroup} key={i} />
+              return <ChapterGroupComponent group={chapter as ChapterGroup} key={chapter.id} />
             default:
               return null
           }
@@ -101,20 +105,31 @@ const Chapters = observer((props: IChaptersProps): ReactElement<IChaptersProps> 
 
 const BookComponent = observer((props: { book: Book }) => {
   const {book} = props
+
+  const ctxMenuHandler = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault()
+
+    if (e.button === 2) {
+      // todo: context menu popup
+
+      // todo: CURD
+    }
+  }
+
   return (
     <div className="book">
-      <BookHead color={book.color} name={book.name} />
+      <BookHead color={book.color} name={book.name} ctxMenuHandler={ctxMenuHandler} />
       <Chapters chapters={book.chapters} />
     </div>
   )
 })
 
-const Books = observer((props: { books: Book[] }) => {
+const BookComponentList = observer((props: { books: Book[] }) => {
   const {books} = props
   return (
     <div className="books">
       {
-        books.map((book, i) => <BookComponent book={book} key={i} />)
+        books.map(book => <BookComponent book={book} key={book.id} />)
       }
     </div>
   )
@@ -145,7 +160,7 @@ const CollectionWithBooks = observer((props: {
       <CollectionHead iconClass={iconClass} name={name} onClick={clickHandler}>
         <AddNotebooks />
       </CollectionHead>
-      <Books books={books} />
+      <BookComponentList books={books} />
     </div>
   )
 })
@@ -156,11 +171,11 @@ export const Notebooks = observer((props: { appState: AppState }) => {
     <div id="notebooks">
       <Collection
         iconClass="" name={i18n('recents')} notes={appState.recents}
-        onClick={() => appState.showNotes(appState.recents)}
+        onClick={() => appState.focusNoteList(appState.recents)}
       />
       <Collection
         iconClass="" name={i18n('trash')} notes={appState.notesInTrash}
-        onClick={() => appState.showNotes(appState.notesInTrash)}
+        onClick={() => appState.focusNoteList(appState.notesInTrash)  /*todo: add trash path*/}
       />
       <CollectionWithBooks iconClass="" name={i18n('notebooks')} books={appState.notebooks} />
     </div>
@@ -170,7 +185,7 @@ export const Notebooks = observer((props: { appState: AppState }) => {
 const Tag = observer((props: { tag: string, notes: number[] }) => {
   const {tag, notes} = props
   return (
-    <div className="tag" onClick={() => appState.showNotes(notes)}>{tag}</div>
+    <div className="tag" onClick={() => appState.focusNoteList(notes) /*todo: add tags path*/}>{tag}</div>
   )
 })
 

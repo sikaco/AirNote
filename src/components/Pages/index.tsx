@@ -9,7 +9,7 @@ import { NoteType } from '../../stores/constants'
 
 const AddPage = observer(() => {
   return (
-    <div id="add-page-btn" onClick={() => appState.addNewNote(NoteType.HTML)}>
+    <div id="add-page-btn" onClick={() => appState.createNewNote(NoteType.HTML)}>
       <div className="btn-inner">
         <span>+</span>{i18n('newPage')}
       </div>
@@ -49,7 +49,7 @@ export default class Pages extends React.Component<EmptyProps, void> {
     return (
       <div id="pages">
         <AddPage />
-        <PageList noteDataList={appState.showedNoteData} />
+        <PageList noteDataList={appState.focusedNoteDataList} />
         <SearchInPages />
       </div>
     )

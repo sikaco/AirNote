@@ -1,4 +1,4 @@
-import { NoteType, ChapterType, Color, SyncState, NoteActionType } from './constants'
+import { NoteType, ChapterType, Color, SyncState, NoteAction } from './constants'
 import { Book, NoteData } from './AppState'
 import * as moment from 'moment'
 
@@ -35,17 +35,20 @@ export const mockForUi: any = {
     {
       color: Color.RED,
       name: 'User guide',
+      id: 1,
       chapters: [
         {
           color: Color.BLUE,
           name: 'Leanote',
           type: ChapterType.CHAPTER,
+          id: 2,
           notes: [0, 1]
         },
         {
           color: Color.BLUE,
           name: 'Explore',
           type: ChapterType.CHAPTER,
+          id: 3,
           notes: [2]
         },
       ]
@@ -53,11 +56,13 @@ export const mockForUi: any = {
     {
       color: Color.RED,
       name: 'Start here',
+      id: 4,
       chapters: []
     },
     {
       color: Color.RED,
       name: 'Summer',
+      id: 5,
       chapters: []
     }
   ],
@@ -69,7 +74,7 @@ export const mockForUi: any = {
       content: 'Your first note',
       deleted: false,
       tags: ['note', 'blog'],
-      id: 0   // TODO: every note should has a uniq id
+      id: 6   // TODO: every note should has a uniq id
     },
     {
       layer: 1,
@@ -78,7 +83,7 @@ export const mockForUi: any = {
       content: 'Your 2nd note',
       deleted: false,
       tags: ['note'],
-      id: 1
+      id: 7
     },
     {
       layer: 1,
@@ -87,7 +92,7 @@ export const mockForUi: any = {
       content: 'Your 2nd note',
       deleted: false,
       tags: [],
-      id: 2
+      id: 8
     },
     {
       layer: 1,
@@ -97,7 +102,7 @@ export const mockForUi: any = {
       deleted: true,
       deletedTime: moment(),
       tags: [],
-      id: 3
+      id: 9
     },
   ],
   recents: [0, 1]
