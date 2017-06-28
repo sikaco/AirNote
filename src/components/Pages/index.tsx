@@ -3,9 +3,9 @@ import { observer } from 'mobx-react'
 import './index.less'
 
 import { EmptyProps } from '../../types'
-import appState, { NoteData } from '../../stores/AppState'
-import { i18n } from '../../stores/I18nStore'
-import { NoteType } from '../../stores/constants'
+import appState, { NoteData } from '../../global/AppState'
+import { i18n } from '../../global/I18nStore'
+import { NoteType } from '../../global/constants'
 
 const AddPage = observer(() => {
   return (

@@ -4,6 +4,7 @@ import * as moment from 'moment'
 
 import { NoteType, SyncState, NoteAction } from './constants'
 import { Book, Chapter, ChapterGroup, NoteData } from './classes'
+import * as util from './util'
 import { mockForUi } from './mock'
 useStrict(true)
 
@@ -17,8 +18,8 @@ export interface ISyncInfo {
   lastSyncedTime: moment.Moment
 }
 
-type INotePath = Array<number>
-type INode = Book | Chapter | ChapterGroup | NoteData
+type NotePath = Array<number>
+type Node = Book | Chapter | ChapterGroup | NoteData
 
 class AppState {
   @observable allNoteData: NoteData[] = [] // all note contents
@@ -29,10 +30,10 @@ class AppState {
     lastSyncedTime: null
   }
 
-  private setId2NotePathMap(
-    arr: Array<Book | ChapterGroup | Chapter>, m: Map<number, INotePath>,
-    parentPath: INotePath = []
-  ) {
+  private static setId2NotePathMap(
+    arr: Array<Book | ChapterGroup | Chapter>, m: Map<number, NotePath>,
+    parentPath: NotePath = []
+  ): void {
     arr.forEach((node, i) => {
       const path = parentPath.concat([i])
       m.set(node.id, path)
@@ -44,15 +45,15 @@ class AppState {
     })
   }
 
-  @computed get id2NotePathMap(): Map<number, INotePath> {
-    const m: Map<number, INotePath> = new Map()
+  @computed get id2NotePathMap(): Map<number, NotePath> {
+    const m: Map<number, NotePath> = new Map()
 
-    this.setId2NotePathMap(toJS(this.notebooks), m)
+    AppState.setId2NotePathMap(toJS(this.notebooks), m)
 
     return m
   }
 
-  @observable private focusedPath: INotePath = null
+  @observable private focusedPath: NotePath = null
   @observable private focusedNoteList: number[] = []  // pages of note
   @computed get focusedNoteDataList(): NoteData[] {
     return this.focusedNoteList.map(noteIndex => this.allNoteData[noteIndex])
@@ -125,7 +126,7 @@ class AppState {
    focus
    */
 
-  @action focusNoteList(notes: number[], currentPath?: INotePath) {
+  @action focusNoteList(notes: number[], currentPath?: NotePath) {
     this.focusedNoteList = notes
     if (currentPath) {
       this.focusedPath = currentPath
@@ -140,7 +141,7 @@ class AppState {
    modified
    */
 
-  @action modifyNode(action: NoteAction, path: INotePath, newNode?: INode) {
+  @action modifyNode(action: NoteAction, path: NotePath, newNode?: Node) {
     switch (action) {
       case NoteAction.ADD:
         break
@@ -148,6 +149,8 @@ class AppState {
         break
       case NoteAction.UPDATE:
         break
+      default:
+        util.assertNever(action)
     }
 
     let targetNote: NoteData = null
@@ -171,7 +174,7 @@ class AppState {
      }*/
   }
 
-  @action moveNode(fromPath: INotePath, toPath: INotePath) {
+  @action moveNode(fromPath: NotePath, toPath: NotePath) {
     /*if (fromI === destI) { return }
      if (fromI < destI) {
      this.focusedNoteList.splice(destI, 0, this.focusedNoteList[fromI])

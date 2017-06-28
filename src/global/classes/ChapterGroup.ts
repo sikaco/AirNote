@@ -3,6 +3,7 @@ import { ChapterType } from '../constants'
 import { Chapter } from './Chapter'
 
 export class ChapterGroup {
+  kind: 'chapterGroup'
   color: string
   name: string
   type: ChapterType.GROUP

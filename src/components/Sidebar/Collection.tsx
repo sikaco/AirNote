@@ -2,9 +2,10 @@ import * as React from 'react'
 import { MouseEventHandler, ReactChildren, ReactElement, MouseEvent } from 'react'
 import { observer } from 'mobx-react'
 
-import { i18n } from '../../stores/I18nStore'
-import { ChapterType } from '../../stores/constants'
-import appState, { Chapter, ChapterGroup, Book, INotesOfTags, AppState } from '../../stores/AppState'
+import { i18n } from '../../global/I18nStore'
+import { ChapterType } from '../../global/constants'
+import * as util from '../../global/util'
+import appState, { Chapter, ChapterGroup, Book, INotesOfTags, AppState } from '../../global/AppState'
 
 function CollectionHead(props: {
   iconClass: string, name: string, onClick: MouseEventHandler<HTMLDivElement>,
@@ -95,6 +96,7 @@ const Chapters = observer((props: IChaptersProps): ReactElement<IChaptersProps> 
             case ChapterType.GROUP:
               return <ChapterGroupComponent group={chapter as ChapterGroup} key={chapter.id} />
             default:
+              util.assertNever(chapter)
               return null
           }
         })

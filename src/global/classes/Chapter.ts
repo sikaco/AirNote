@@ -2,6 +2,7 @@ import * as moment from 'moment'
 import { ChapterType } from '../constants'
 
 export class Chapter {
+  kind: 'chapter'
   color: string
   name: string
   type: ChapterType.CHAPTER

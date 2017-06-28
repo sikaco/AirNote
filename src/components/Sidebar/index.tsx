@@ -6,10 +6,11 @@ import { Radio } from 'antd'
 import './index.less'
 
 import { EmptyProps, FormInputEvent } from '../../types'
-import { i18n } from '../../stores/I18nStore'
-import appState, { ISyncInfo } from '../../stores/AppState'
+import { i18n } from '../../global/I18nStore'
+import appState, { ISyncInfo } from '../../global/AppState'
+import { SyncState } from '../../global/constants'
+import * as util from '../../global/util'
 import { Notebooks, Tags } from './Collection'
-import { SyncState } from '../../stores/constants'
 
 const tabs = [
   {
@@ -45,6 +46,9 @@ const SyncInfoBar = observer((props: { syncInfo: ISyncInfo }) => {
       break
     case SyncState.FAILED:
       syncTips = `${i18n('syncFailed')}`
+      break
+    default:
+      util.assertNever(syncInfo.state)
   }
 
   return (

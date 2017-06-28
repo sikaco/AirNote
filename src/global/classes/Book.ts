@@ -3,6 +3,7 @@ import { Chapter } from './Chapter'
 import { ChapterGroup } from './ChapterGroup'
 
 export class Book {
+  kind: 'book'
   color: string
   name: string
   chapters: Array<Chapter | ChapterGroup>

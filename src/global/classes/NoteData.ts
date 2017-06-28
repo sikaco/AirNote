@@ -2,6 +2,7 @@ import * as moment from 'moment'
 import { NoteType } from '../constants'
 
 export class NoteData {
+  kind: 'noteData'
   layer: number
   title: string
   contentType: NoteType

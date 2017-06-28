@@ -6,7 +6,7 @@ import { EmptyProps } from '../types'
 import Sidebar from './Sidebar'
 import Pages from './Pages'
 import Note from './Note'
-import i18nStore from '../stores/I18nStore'
+import i18nStore from '../global/I18nStore'
 import './app.less'
 
 @observer
