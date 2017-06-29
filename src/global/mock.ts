@@ -74,7 +74,7 @@ export const mockForUi: any = {
       content: 'Your first note',
       deleted: false,
       tags: ['note', 'blog'],
-      id: 6   // TODO: every note should has a uniq id
+      id: 6
     },
     {
       layer: 1,

@@ -2,24 +2,69 @@ import { observable, action, computed, useStrict, toJS } from 'mobx'
 import _ from 'lodash'
 import * as moment from 'moment'
 
-import { NoteType, SyncState, NoteAction } from './constants'
+import { NoteType, SyncState, NoteAction, NodeKind } from './constants'
 import { Book, Chapter, ChapterGroup, NoteData } from './classes'
 import * as util from './util'
 import { mockForUi } from './mock'
 useStrict(true)
 
-export * from './classes'
-export interface INotesOfTags {
+interface INotesOfTags {
   [tag: string]: number[]
 }
 
-export interface ISyncInfo {
+interface ISyncInfo {
   state: SyncState
   lastSyncedTime: moment.Moment
 }
 
 type NotePath = Array<number>
-type Node = Book | Chapter | ChapterGroup | NoteData
+type NonLeafNode = Book | Chapter | ChapterGroup
+type Node = NonLeafNode | NoteData
+type Id2PathMap = Map<number, NotePath>
+
+
+// todo: will be optimised
+function getId2NotePathMap(
+  arr: Array<Book | ChapterGroup | Chapter>,
+  map: Id2PathMap = new Map(),
+  parentPath: NotePath = []
+): Id2PathMap {
+  // `for` faster then `forEach`
+  for (let i = 0, len = arr.length; i < len; i++) {
+    const path = parentPath.concat([i])
+    const node = arr[i]
+    map.set(node.id, path)
+
+    let subNodes = (node as Book | ChapterGroup).chapters
+    if (subNodes && subNodes.length > 0) {
+      getId2NotePathMap(subNodes, map, path)
+    }
+  }
+
+  return map
+}
+
+function getNonLeafNodeByPath(arr: Array<NonLeafNode>, path: NotePath): NonLeafNode {
+  let subArr: Array<NonLeafNode> = arr
+  let node: NonLeafNode
+
+  for (let i = 0, len = path.length; i < len; i++) {
+    node = subArr[path[i]]
+    switch (node.kind) {
+      case NodeKind.BOOK:
+      case NodeKind.CHAPTER_GROUP:
+        subArr = node.chapters
+        break
+      case NodeKind.CHAPTER:
+        // the most deep in CHAPTER
+        return node
+      default:
+        util.assertNever(node)
+    }
+  }
+
+  return node
+}
 
 class AppState {
   @observable allNoteData: NoteData[] = [] // all note contents
@@ -30,27 +75,8 @@ class AppState {
     lastSyncedTime: null
   }
 
-  private static setId2NotePathMap(
-    arr: Array<Book | ChapterGroup | Chapter>, m: Map<number, NotePath>,
-    parentPath: NotePath = []
-  ): void {
-    arr.forEach((node, i) => {
-      const path = parentPath.concat([i])
-      m.set(node.id, path)
-
-      let subNodes = (node as Book | ChapterGroup).chapters
-      if (subNodes && subNodes.length > 0) {
-        this.setId2NotePathMap(subNodes, m, path)
-      }
-    })
-  }
-
-  @computed get id2NotePathMap(): Map<number, NotePath> {
-    const m: Map<number, NotePath> = new Map()
-
-    AppState.setId2NotePathMap(toJS(this.notebooks), m)
-
-    return m
+  @computed get id2NotePathMap(): Id2PathMap {
+    return getId2NotePathMap(toJS(this.notebooks))
   }
 
   @observable private focusedPath: NotePath = null
@@ -101,9 +127,7 @@ class AppState {
    */
 
   @action addBook(color: string, name: string) {  // todo
-    const noteData = new NoteData(NoteType.HTML)
-    this.allNoteData.push(noteData)
-    const noteIndex = this.allNoteData.length - 1
+    const noteIndex = this.addNoteData(new NoteData(NoteType.HTML))
 
     const newChapter = new Chapter('red', '') // todo: chapterColor should be random in a set
     newChapter.addNote(noteIndex)
@@ -141,9 +165,54 @@ class AppState {
    modified
    */
 
+  private addNoteData(note: NoteData): number {
+    this.allNoteData.push(note)
+    return this.allNoteData.length - 1
+  }
+
+  private getChapterNode(path: NotePath): Chapter {
+    let node = getNonLeafNodeByPath(this.notebooks, path)
+    while (node.kind !== NodeKind.CHAPTER) {
+      node = getNonLeafNodeByPath(node.chapters, [0])
+    }
+
+    return node
+  }
+
+  private addNode(path: NotePath, newNode: Node) {
+    switch (newNode.kind) {
+      case NodeKind.BOOK:
+        this.notebooks.push(newNode)
+        break
+      case NodeKind.CHAPTER_GROUP:
+      case NodeKind.CHAPTER:
+        const node = getNonLeafNodeByPath(this.notebooks, path)
+        switch (node.kind) {
+          case NodeKind.BOOK:
+          case NodeKind.CHAPTER_GROUP:
+            node.chapters.push(newNode)
+            break
+          case NodeKind.CHAPTER:
+            break
+          default:
+            util.assertNever(node)
+        }
+
+        break
+      case NodeKind.NOTE_DATA:
+        const chapter = this.getChapterNode(path)
+        const noteIndex = this.addNoteData(newNode)
+        chapter.notes.push(noteIndex)
+        break
+      default:
+        util.assertNever(newNode)
+    }
+  }
+
   @action modifyNode(action: NoteAction, path: NotePath, newNode?: Node) {
     switch (action) {
       case NoteAction.ADD:
+        this.addNode(path, newNode)
         break
       case NoteAction.DELETE:
         break
@@ -154,35 +223,38 @@ class AppState {
     }
 
     let targetNote: NoteData = null
+    /*
+    switch (action) {   // todo
+      case NoteAction.ADD:
+        this.allNoteData.push(newNode)
+        this.focusedNoteList.push(this.allNoteData.length - 1)
+        break
+      case NoteAction.DELETE:
+        targetNote = this.allNoteData[this.focusedNoteList[noteI]]
+        targetNote.deleted = true
+        targetNote.deletedTime = moment()
 
-    /*switch (action) {   // todo
-     case NoteAction.ADD:
-     this.allNoteData.push(newNode)
-     this.focusedNoteList.push(this.allNoteData.length - 1)
-     break
-     case NoteAction.DELETE:
-     targetNote = this.allNoteData[this.focusedNoteList[noteI]]
-     targetNote.deleted = true
-     targetNote.deletedTime = moment()
-
-     this.focusedNoteList.splice(noteI, 1)
-     break
-     case NoteAction.UPDATE:
-     targetNote = this.allNoteData[this.focusedNoteList[noteI]]
-     _.merge(targetNote, newNode)
-     break
-     }*/
+        this.focusedNoteList.splice(noteI, 1)
+        break
+      case NoteAction.UPDATE:
+        targetNote = this.allNoteData[this.focusedNoteList[noteI]]
+        _.merge(targetNote, newNode)
+        break
+    }
+    */
   }
 
   @action moveNode(fromPath: NotePath, toPath: NotePath) {
-    /*if (fromI === destI) { return }
-     if (fromI < destI) {
-     this.focusedNoteList.splice(destI, 0, this.focusedNoteList[fromI])
-     this.focusedNoteList.splice(fromI, 1)
-     } else {
-     const noteArr = this.focusedNoteList.splice(fromI, 1)
-     this.focusedNoteList.splice(destI, 0, noteArr[0])
-     }*/
+    /*
+    if (fromI === destI) { return }
+    if (fromI < destI) {
+      this.focusedNoteList.splice(destI, 0, this.focusedNoteList[fromI])
+      this.focusedNoteList.splice(fromI, 1)
+    } else {
+      const noteArr = this.focusedNoteList.splice(fromI, 1)
+      this.focusedNoteList.splice(destI, 0, noteArr[0])
+    }
+    */
   }
 
   constructor() {
@@ -202,5 +274,10 @@ class AppState {
   }
 }
 
+export * from './classes'
 export default new AppState()
-export { AppState }
+export {
+  AppState,
+  INotesOfTags,
+  ISyncInfo
+}

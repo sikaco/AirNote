@@ -1,8 +1,8 @@
 import * as moment from 'moment'
-import { NoteType } from '../constants'
+import { NoteType, NodeKind } from '../constants'
 
 export class NoteData {
-  kind: 'noteData'
+  kind: NodeKind.NOTE_DATA
   layer: number
   title: string
   contentType: NoteType

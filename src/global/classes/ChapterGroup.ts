@@ -1,9 +1,9 @@
 import * as moment from 'moment'
-import { ChapterType } from '../constants'
+import { ChapterType, NodeKind } from '../constants'
 import { Chapter } from './Chapter'
 
 export class ChapterGroup {
-  kind: 'chapterGroup'
+  kind: NodeKind.CHAPTER_GROUP
   color: string
   name: string
   type: ChapterType.GROUP
