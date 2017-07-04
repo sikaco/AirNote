@@ -1,4 +1,6 @@
 # AirNote
+
+![Alt text](./AirNote.png)
 A note app just like air, concise but necessary.
 
 ## Develop
