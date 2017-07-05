@@ -25,7 +25,7 @@ type Id2PathMap = Map<number, NotePath>
 
 // todo: will be optimised
 function getId2NotePathMap(
-  arr: Array<Book | ChapterGroup | Chapter>,
+  arr: Array<NonLeafNode>,
   map: Id2PathMap = new Map(),
   parentPath: NotePath = []
 ): Id2PathMap {
@@ -64,6 +64,20 @@ function getNonLeafNodeByPath(arr: Array<NonLeafNode>, path: NotePath): NonLeafN
   }
 
   return node
+}
+
+function getChapterNode(nodeList: NonLeafNode[], path: NotePath): Chapter {
+  let node = getNonLeafNodeByPath(nodeList, path)
+
+  while (node.kind !== NodeKind.CHAPTER) {
+    node = getNonLeafNodeByPath(node.chapters, [0])
+  }
+
+  return node
+}
+
+function getNotesOfNode(node: NonLeafNode): number[] {
+  // todo
 }
 
 class AppState {
@@ -106,12 +120,13 @@ class AppState {
     })
 
     return dataWithIndex
-      .sort((p, n) => Number(p.deletedTime) - Number(n.deletedTime))
+      .sort((p, n) => p.deletedTime.valueOf() - n.deletedTime.valueOf())
       .map(note => note.index)
   }
 
   @computed get notesOfTags(): INotesOfTags {
     const notesOfTags: INotesOfTags = {}
+
     this.allNoteData.forEach((note, i) => {
       note.tags.forEach(tag => {
         notesOfTags[tag] = notesOfTags[tag] || []
@@ -143,7 +158,7 @@ class AppState {
 
   @action createNewNote(noteType: NoteType) {
     const newNote = new NoteData(noteType)
-    this.modifyNode(NoteAction.ADD, this.focusedPath, newNote)
+    this.modifyNode(NoteAction.ADD, this.focusedPath, null, newNote)
   }
 
   /*
@@ -170,19 +185,10 @@ class AppState {
     return this.allNoteData.length - 1
   }
 
-  private getChapterNode(path: NotePath): Chapter {
-    let node = getNonLeafNodeByPath(this.notebooks, path)
-    while (node.kind !== NodeKind.CHAPTER) {
-      node = getNonLeafNodeByPath(node.chapters, [0])
-    }
-
-    return node
-  }
-
-  private addNode(path: NotePath, newNode: Node) {
+  private addNode(path: NotePath, newNode: Node, index?: number) {
     switch (newNode.kind) {
       case NodeKind.BOOK:
-        this.notebooks.push(newNode)
+        util.addToList(this.notebooks, newNode, index)
         break
       case NodeKind.CHAPTER_GROUP:
       case NodeKind.CHAPTER:
@@ -190,58 +196,78 @@ class AppState {
         switch (node.kind) {
           case NodeKind.BOOK:
           case NodeKind.CHAPTER_GROUP:
-            node.chapters.push(newNode)
+            util.addToList(node.chapters, newNode, index)
             break
           case NodeKind.CHAPTER:
             break
           default:
             util.assertNever(node)
         }
-
         break
       case NodeKind.NOTE_DATA:
-        const chapter = this.getChapterNode(path)
+        const chapter = getChapterNode(this.notebooks, path)
         const noteIndex = this.addNoteData(newNode)
-        chapter.notes.push(noteIndex)
+        util.addToList(chapter.notes, noteIndex, index)
         break
       default:
         util.assertNever(newNode)
     }
   }
 
-  @action modifyNode(action: NoteAction, path: NotePath, newNode?: Node) {
+  private delNote(index: number) {
+    const deletedNoteData = this.allNoteData[index]
+    deletedNoteData.deletedTime = moment()
+    deletedNoteData.deleted = true
+  }
+
+  private delNode(path: NotePath, index: number) {
+    const node = getNonLeafNodeByPath(this.notebooks, path)
+    switch (node.kind) {
+      case NodeKind.BOOK:
+      case NodeKind.CHAPTER_GROUP:
+        const deletedNode = node.chapters.splice(index, 1)[0]
+        getNotesOfNode(deletedNode).map(this.delNote)
+        break
+      case NodeKind.CHAPTER:
+        const deleteNote = node.notes.splice(index, 1)[0]
+        this.delNote(deleteNote)
+        break
+      default:
+        util.assertNever(node)
+    }
+  }
+
+  private updateNode(path: NotePath, index: number, newNode: Node) {
+    const superNode = getNonLeafNodeByPath(this.notebooks, path)
+    switch (superNode.kind) {
+      case NodeKind.BOOK:
+      case NodeKind.CHAPTER_GROUP:
+        const node = superNode.chapters[index]
+        _.merge(node, newNode)
+        break
+      case NodeKind.CHAPTER:
+        const noteData = this.allNoteData[superNode.notes[index]]
+        _.merge(noteData, newNode)
+        break
+      default:
+        util.assertNever(superNode)
+    }
+  }
+
+  @action modifyNode(action: NoteAction, path: NotePath, index?: number, newNode?: Node) {
     switch (action) {
       case NoteAction.ADD:
-        this.addNode(path, newNode)
+        this.addNode(path, newNode, index)
         break
       case NoteAction.DELETE:
+        this.delNode(path, index)
         break
       case NoteAction.UPDATE:
+        this.updateNode(path, index, newNode)
         break
       default:
         util.assertNever(action)
     }
-
-    let targetNote: NoteData = null
-    /*
-    switch (action) {   // todo
-      case NoteAction.ADD:
-        this.allNoteData.push(newNode)
-        this.focusedNoteList.push(this.allNoteData.length - 1)
-        break
-      case NoteAction.DELETE:
-        targetNote = this.allNoteData[this.focusedNoteList[noteI]]
-        targetNote.deleted = true
-        targetNote.deletedTime = moment()
-
-        this.focusedNoteList.splice(noteI, 1)
-        break
-      case NoteAction.UPDATE:
-        targetNote = this.allNoteData[this.focusedNoteList[noteI]]
-        _.merge(targetNote, newNode)
-        break
-    }
-    */
   }
 
   @action moveNode(fromPath: NotePath, toPath: NotePath) {

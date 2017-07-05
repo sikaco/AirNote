@@ -10,7 +10,7 @@ export class NoteData {
   deleted: boolean
   deletedTime?: moment.Moment
   tags: string[]
-  id: number
+  readonly id: number
 
   constructor(contentType: NoteType) {
     this.layer = 0

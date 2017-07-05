@@ -8,7 +8,7 @@ export class Book {
   color: string
   name: string
   chapters: Array<Chapter | ChapterGroup>
-  id: number
+  readonly id: number
 
   constructor(color: string, name: string) {
     this.color = color

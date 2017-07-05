@@ -7,7 +7,7 @@ export class Chapter {
   name: string
   type: ChapterType.CHAPTER
   notes: number[]
-  id: number
+  readonly id: number
 
   constructor(color: string, name: string) {
     this.color = color

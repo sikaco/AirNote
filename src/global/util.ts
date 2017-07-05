@@ -2,9 +2,15 @@ function assertNever(x: never): never {
   throw new Error("Unexpected object: " + x);
 }
 
-// 往ret对象的keys指定位置插入product作为叶子节点
-// function set
+function addToList<T>(list: Array<T>, node: T, index?: number): void {
+  if (index) {
+    list.splice(index, 0, node)
+  } else {
+    list.push(node)
+  }
+}
 
 export {
-  assertNever
+  assertNever,
+  addToList
 }
