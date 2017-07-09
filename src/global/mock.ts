@@ -1,5 +1,5 @@
-import { NoteType, ChapterType, Color, SyncState, NoteAction } from './constants'
-import { Book, NoteData } from './AppState'
+import { NoteType, ChapterType, Color, SyncState, NoteAction, NodeKind } from './constants'
+import { IBook, INoteData } from './classes'
 import * as moment from 'moment'
 
 const complexNoteBooks = [
@@ -30,14 +30,22 @@ const complexNoteBooks = [
   }
 ]
 
-export const mockForUi: any = {
+interface MockData {
+  notebooks: IBook[]
+  allNoteData: INoteData[]
+  recents: number[]
+}
+
+export const mockForUi: MockData = {
   notebooks: [
     {
+      kind: NodeKind.BOOK,
       color: Color.RED,
       name: 'User guide',
       id: 1,
       chapters: [
         {
+          kind: NodeKind.CHAPTER,
           color: Color.BLUE,
           name: 'Leanote',
           type: ChapterType.CHAPTER,
@@ -45,6 +53,7 @@ export const mockForUi: any = {
           notes: [0, 1]
         },
         {
+          kind: NodeKind.CHAPTER,
           color: Color.BLUE,
           name: 'Explore',
           type: ChapterType.CHAPTER,
@@ -54,12 +63,14 @@ export const mockForUi: any = {
       ]
     },
     {
+      kind: NodeKind.BOOK,
       color: Color.RED,
       name: 'Start here',
       id: 4,
       chapters: []
     },
     {
+      kind: NodeKind.BOOK,
       color: Color.RED,
       name: 'Summer',
       id: 5,
@@ -68,6 +79,7 @@ export const mockForUi: any = {
   ],
   allNoteData: [
     {
+      kind: NodeKind.NOTE_DATA,
       layer: 0,
       title: 'Hello Notes',
       contentType: NoteType.HTML,
@@ -77,6 +89,7 @@ export const mockForUi: any = {
       id: 6
     },
     {
+      kind: NodeKind.NOTE_DATA,
       layer: 1,
       title: 'Hello Notes 2nd',
       contentType: NoteType.HTML,
@@ -86,6 +99,7 @@ export const mockForUi: any = {
       id: 7
     },
     {
+      kind: NodeKind.NOTE_DATA,
       layer: 1,
       title: 'Hello Notes 2nd',
       contentType: NoteType.HTML,
@@ -95,6 +109,7 @@ export const mockForUi: any = {
       id: 8
     },
     {
+      kind: NodeKind.NOTE_DATA,
       layer: 1,
       title: 'Hello Notes in trash',
       contentType: NoteType.HTML,

@@ -77,7 +77,24 @@ function getChapterNode(nodeList: NonLeafNode[], path: NotePath): Chapter {
 }
 
 function getNotesOfNode(node: NonLeafNode): number[] {
-  // todo
+  let notes: number[]
+
+  switch (node.kind) {
+    case NodeKind.BOOK:
+    case NodeKind.CHAPTER_GROUP:
+      notes = node.chapters
+        .map(chapter => getNotesOfNode(chapter))
+        .reduce((p, n) => {
+          return p.concat(n)
+        }, [])
+
+      break
+    case NodeKind.CHAPTER:
+      notes = node.notes
+      break
+  }
+
+  return notes
 }
 
 class AppState {
@@ -145,10 +162,10 @@ class AppState {
     const noteIndex = this.addNoteData(new NoteData(NoteType.HTML))
 
     const newChapter = new Chapter('red', '') // todo: chapterColor should be random in a set
-    newChapter.addNote(noteIndex)
+    newChapter.notes.push(noteIndex)
 
     const newBook = new Book(color, name)
-    newBook.addChapter(newChapter)
+    newBook.chapters.push(newChapter)
 
     // mount new notebook and focus first note of it
     this.notebooks.push(newBook)
@@ -290,8 +307,10 @@ class AppState {
   @action getData() {
     const {allNoteData, notebooks, recents} = mockForUi
     this.allNoteData = allNoteData
-    this.notebooks = notebooks
     this.recents = recents
+
+    // todo: transform json to class instance if methods are added to classes
+    this.notebooks = notebooks as Book[]
 
     this.syncInfo = {
       state: SyncState.DONE,

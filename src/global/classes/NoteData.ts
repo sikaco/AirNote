@@ -1,7 +1,19 @@
 import * as moment from 'moment'
 import { NoteType, NodeKind } from '../constants'
 
-export class NoteData {
+export interface INoteData {
+  kind: NodeKind.NOTE_DATA
+  layer: number
+  title: string
+  contentType: NoteType
+  content: string
+  deleted: boolean
+  deletedTime?: moment.Moment
+  tags: string[]
+  readonly id: number
+}
+
+export class NoteData implements INoteData {
   kind: NodeKind.NOTE_DATA
   layer: number
   title: string

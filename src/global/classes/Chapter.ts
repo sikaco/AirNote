@@ -1,7 +1,16 @@
 import * as moment from 'moment'
 import { ChapterType, NodeKind } from '../constants'
 
-export class Chapter {
+export interface IChapter {
+  kind: NodeKind.CHAPTER
+  color: string
+  name: string
+  type: ChapterType.CHAPTER
+  notes: number[]
+  readonly id: number
+}
+
+export class Chapter implements IChapter {
   kind: NodeKind.CHAPTER
   color: string
   name: string

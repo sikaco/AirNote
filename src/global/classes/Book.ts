@@ -1,9 +1,17 @@
 import * as moment from 'moment'
-import { Chapter } from './Chapter'
-import { ChapterGroup } from './ChapterGroup'
+import { Chapter, IChapter } from './Chapter'
+import { ChapterGroup, IChapterGroup } from './ChapterGroup'
 import { NodeKind } from '../constants'
 
-export class Book {
+export interface IBook {
+  kind: NodeKind.BOOK
+  color: string
+  name: string
+  chapters: Array<IChapter | IChapterGroup>
+  readonly id: number
+}
+
+export class Book implements IBook {
   kind: NodeKind.BOOK
   color: string
   name: string
