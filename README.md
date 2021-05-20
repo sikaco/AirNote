@@ -1,3 +1,9 @@
+This project is *deprecated*, no longer be maintained any more。
+
+New project has been created there: https://github.com/sikaco/Universal-Note
+
+---
+
 # AirNote
 
 ![Alt text](./AirNote.png)
